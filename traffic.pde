@@ -2,7 +2,8 @@
 
 ArrayList<Car> carList = new ArrayList<Car>();
 ArrayList<Road> roadList = new ArrayList<Road>();
-long prevTime;
+long prevTime = 0;
+boolean debug = true;
 
 void setup() {
   size(800, 600); 
