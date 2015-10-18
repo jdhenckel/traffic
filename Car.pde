@@ -13,7 +13,7 @@ class Car {
   Car(float x, float y) {
     pos = new PVector(x, y);
     angle = 1;
-    speed = 10;
+    speed = 50 + random(10);
     width = 5;
     length = 10;
     neighbor = new ArrayList<Car> ();
@@ -42,15 +42,33 @@ class Car {
   }
   
   void steer() {
-    // todo - add AI here
-    //if (random(20) < 1) angle += random(-.5, .5);
-   
     // follow a road to the end, and then pick a new road
     if (currentRoad == null || currentRoad.end().dist(pos) < 20) {
       pickAnotherRoad();
     }
+    PVector v = currentRoad.nearestPoint(pos);
+    float d = v.dist(pos);
+    v.sub(pos);    
+    if (d < 20) {
+      d /= 20;
+      v.mult(d).add(PVector.mult(currentRoad.direction, 1 - d));
+    }
+    turnToward(v);
   }
-  
+
+  float unwrap(float a) {
+    while (a > PI) a -= 2*PI;
+    while (a < -PI) a += 2*PI;
+    return a;
+  }
+   //<>//
+  void turnToward(PVector dir) {
+    float turnRate = .3;
+    float a = dir.heading();   
+    float da = a - unwrap(angle);
+    if (abs(da) > PI) da = 2 * PI - da;   // shortest way around the circle
+    angle += max(-turnRate, min(da, turnRate));
+  }
   
   void pickAnotherRoad() {
     float best = 1e9f;
@@ -60,7 +78,7 @@ class Car {
       if (r != currentRoad) {
         PVector v = r.nearestPoint(pos);
         float d2 = PVector.sub(pos, v).magSq();
-        if (d2 < best) {
+        if (d2 + random(10) < best) {
           best = d2;
           nearest = r;
         }

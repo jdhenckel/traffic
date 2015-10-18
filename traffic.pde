@@ -13,17 +13,20 @@ void setup() {
 }
 
 void load() {
-  for (int i = 0; i < 3; ++i) carList.add(new Car(i*10, 20));
-  roadList.add(new Road(0, 0, 150, 0));
-  roadList.add(new Road(0, 0, 0, 150));
-  roadList.add(new Road(0, 0, -150, 0));
+  for (int i = 0; i < 10; ++i) carList.add(new Car(i*40-100, 70));
+  roadList.add(new Road(0, 11, 150, 0));
+  roadList.add(new Road(150, 0, 150, 150));
+  roadList.add(new Road(150, 150, 0, 150));
+  roadList.add(new Road(0, 150, 0, 0));
+  roadList.add(new Road(0, 0, -100, 200));
   roadList.add(new Road(0, 0, 0, -150));
+  roadList.add(new Road(-100, 200, 0, 150));
 }
 
 
 void draw() {
   generatePairs();
-  steerCars();
+  steerCars(); //<>//
   stepTime();
   setupCamera();
   drawRoads();
