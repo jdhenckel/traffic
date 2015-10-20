@@ -10,6 +10,7 @@ float fps = 60;
 boolean debug = true;
 PVector viewCenter = new PVector(0, 0);
 float viewZoom = 1;
+float viewAngle = 0;
 IntList keyList = new IntList();
 
 void setup() {
@@ -45,16 +46,22 @@ void draw() {
 void lookAtKeys() {
   float panRate = -15/viewZoom;
   float zoomRate = 1.03;
+  float turnRate = .04;
+  PVector move = new PVector(0, 0);
   for (int i : keyList) {
     switch (i) {
-      case 'a': viewCenter.x -= panRate; break;
-      case 's': viewCenter.y -= panRate; break;
-      case 'd': viewCenter.x += panRate; break;
-      case 'w': viewCenter.y += panRate; break;
-      case ',': viewZoom /= zoomRate; break;
-      case '.': viewZoom *= zoomRate; break;
+      case 'a': move.x -= panRate; break;
+      case 's': move.y -= panRate; break;
+      case 'd': move.x += panRate; break;
+      case 'w': move.y += panRate; break;
+      case 38 : viewZoom *= zoomRate; break;
+      case 40 : viewZoom /= zoomRate; break;
+      case 37 : viewAngle = sumAngles(viewAngle, turnRate); break;
+      case 39 : viewAngle = sumAngles(viewAngle, -turnRate); break;
+      case 'r': viewAngle = 0; viewCenter.set(0,0); viewZoom = 1; break;
     }
   }
+  viewCenter.add(move.rotate(viewAngle));
 }
 
 void generatePairs() {
@@ -88,20 +95,12 @@ void stepTime() {
   for (Car c : carList) c.stepTime(1/60.f);  
 }
 
-// This converts float to string, and rounds it off 
-String toStr(float x) {
-  String s = String.valueOf(x);
-  int i = s.indexOf('.');
-  if (i < 0 || abs(x) < 0.9) return s;
-  if (i > 5) return s.substring(0,i);
-  return s.substring(0, min(s.length(), i + 2));
-}
-
 void beginRender() {
   background(180);
+  translate(.5*width, .5*height); 
+  rotate(viewAngle);
   scale(viewZoom, -viewZoom);   // flip y axis
-  translate(viewCenter.x + .5*width/viewZoom, 
-            viewCenter.y - .5*height/viewZoom);  // move origin to center
+  translate(viewCenter.x, viewCenter.y);
 }
 
 void drawRoads() {
@@ -141,4 +140,24 @@ void keyPressed() {
 void keyReleased() {
   int x = (key==CODED) ? keyCode : (int)key;
   keyList.removeValue(x);
+}
+
+//-----------------------------
+// some misc utilities
+
+// This converts float to string, and rounds it off 
+String toStr(float x) {
+  String s = String.valueOf(x);
+  int i = s.indexOf('.');
+  if (i < 0 || abs(x) < 0.9) return s;
+  if (i > 5) return s.substring(0,i);
+  return s.substring(0, min(s.length(), i + 2));
+}
+
+// return a + b, modulus PI
+float sumAngles(float a, float b) {
+  float c = a + b;
+  while (c > PI) c -= 2*PI;
+  while (c < -PI) c += 2*PI;
+  return c;
 }

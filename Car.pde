@@ -56,18 +56,11 @@ class Car {
     turnToward(v);
   }
 
-  float unwrap(float a) {
-    while (a > PI) a -= 2*PI;
-    while (a < -PI) a += 2*PI;
-    return a;
-  }
-   //<>//
-  void turnToward(PVector dir) {
+  void turnToward(PVector dir) { //<>//
     float turnRate = .3;
     float a = dir.heading();   
-    float da = a - unwrap(angle);
-    if (abs(da) > PI) da = 2 * PI - da;   // shortest way around the circle
-    angle += max(-turnRate, min(da, turnRate));
+    float da = sumAngles(a, -angle);
+    angle = sumAngles(angle, max(-turnRate, min(da, turnRate)));
   }
   
   void pickAnotherRoad() {
