@@ -1,5 +1,10 @@
 # traffic
-traffic simulation using Processing3
+traffic simulation using Processing3.  
+Controls are:
+- Move: 'w', 'a', 's', 'd'
+- Pause: 'p'
+- Step: 'o'
+- Recenter: 'r'
 
 ## To Do:
 - [ ] make random color generator, so each car can be a diff color  
