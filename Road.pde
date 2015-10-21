@@ -15,9 +15,11 @@ class Road {
   }
   
   void draw() {
-    stroke(50);
+    stroke(30);             // COLOR OF THE ROAD
     PVector end = end();
+    strokeWeight(10);
     line(start.x, start.y, end.x, end.y);
+    strokeWeight(1);
   }
   
   // returns the nearest point on the road to given point
@@ -31,4 +33,5 @@ class Road {
   PVector end() { 
     return PVector.add(start, PVector.mult(direction, len)); 
   }
+  
 }

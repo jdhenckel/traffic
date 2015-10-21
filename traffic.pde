@@ -1,7 +1,11 @@
 /*
   Traffic Simulator -- Started Oct 2015, John and Quinn Henckel
 
-  Use keys WASD to pan, <> to zoom.
+  Use keys WASD to pan, 
+  arrows to rotate and zoom. 
+  R = reset, P = pause, o = step
+  Esc = quit
+  
 */
 ArrayList<Car> carList = new ArrayList<Car>();
 ArrayList<Road> roadList = new ArrayList<Road>();
@@ -12,7 +16,10 @@ PVector viewCenter = new PVector(0, 0);
 float viewZoom = 1;
 float viewAngle = 0;
 IntList keyList = new IntList();
+boolean pause = false;
+boolean singleStep = false;
 
+//----------------------------
 void setup() {
   size(800, 600); 
   rectMode(CENTER);
@@ -20,14 +27,9 @@ void setup() {
 }
 
 void load() {
+  // make a bunch of cars and roads
   for (int i = 0; i < 10; ++i) carList.add(new Car(i*40-100, 70));
-  roadList.add(new Road(0, 11, 150, 0));
-  roadList.add(new Road(150, 0, 150, 150));
-  roadList.add(new Road(150, 150, 0, 150));
-  roadList.add(new Road(0, 150, 0, 0));
-  roadList.add(new Road(0, 0, -100, 200));
-  roadList.add(new Road(0, 0, 0, -150));
-  roadList.add(new Road(-100, 200, 0, 150));
+  setup2();
 }
 
 
@@ -83,7 +85,7 @@ void generatePairs() {
 }
 
 void steerCars() {
-  for (Car c : carList) c.steer();
+  if (!pause) for (Car c : carList) c.steer();
 }
 
 void stepTime() {
@@ -91,12 +93,11 @@ void stepTime() {
   float dt = (t - prevTime) / 1e9f;
   prevTime = t;
   fps = fps*.99 + .01/dt;
-//  dt = max(0.01, min(dt, 0.1));     // clamp dt from 10 to 100 fps 
-  for (Car c : carList) c.stepTime(1/60.f);  
+  if (!pause) for (Car c : carList) c.stepTime(1/60.f);  
 }
 
 void beginRender() {
-  background(180);
+  background(43, 64, 0);       // COLOR OF THE GRASS
   translate(.5*width, .5*height); 
   rotate(viewAngle);
   scale(viewZoom, -viewZoom);   // flip y axis
@@ -116,13 +117,15 @@ void endRender() {
   float x = 10;
   float y = 20;
   float dy = 15;
-  fill(0);
+  fill(200);
   text("num cars = "+carList.size(), x, y+=dy);
   text("num roads = "+roadList.size(), x, y+=dy);
-  text("fps = "+toStr(fps), x, y+=dy);
+  text("fps = "+toStr(fps)+(pause?" PAUSE":""), x, y+=dy);
   text("zoom = "+viewZoom, x, y+=dy);
   text("center = ("+toStr(viewCenter.x)+", "+toStr(viewCenter.y)+")", x, y+=dy);
   text("key:"+keydump(), x, y+=dy);
+  text("pause = "+pause, x, y+=dy);
+  if (singleStep) pause = true;
 }
 
 String keydump() {
@@ -142,6 +145,13 @@ void keyReleased() {
   keyList.removeValue(x);
 }
 
+void keyTyped() {
+  switch (key) {
+    case 'p': singleStep = false; pause = !pause; break;
+    case 'o': singleStep = true; pause = false; break;
+  }
+}
+  
 //-----------------------------
 // some misc utilities
 
@@ -160,4 +170,35 @@ float sumAngles(float a, float b) {
   while (c > PI) c -= 2*PI;
   while (c < -PI) c += 2*PI;
   return c;
+}
+
+
+void setup1() {  
+  roadList.add(new Road(0, 11, 150, 0));
+  roadList.add(new Road(150, 0, 150, 150));
+  roadList.add(new Road(150, 150, 0, 150));
+  roadList.add(new Road(0, 150, 0, 0));
+  roadList.add(new Road(0, 0, -100, 200));
+  roadList.add(new Road(0, 0, 0, -150));
+  roadList.add(new Road(-100, 200, 0, 150)); 
+}
+
+void setup2() {  
+  float w = 150;
+  roadList.add(new Road(5, 5, -w, 5));
+  roadList.add(new Road(-w, -5, 5, -5));
+  roadList.add(new Road(w, 5, -5, 5));
+  roadList.add(new Road(-5, -5, w, -5));
+  roadList.add(new Road(5, -5, 5, w));
+  roadList.add(new Road(-5, w, -5, -5));
+  roadList.add(new Road(-5, 5, -5, -w));
+  roadList.add(new Road(5, -w, 5, 5));
+  roadList.add(new Road(w, -5, w, w));
+  roadList.add(new Road(w, w, -5, w));
+  roadList.add(new Road(5, w, -w, w));
+  roadList.add(new Road(-w, w, -w, -5));
+  roadList.add(new Road(-w, 5, -w, -w));
+  roadList.add(new Road(-w, -w, 5, -w));
+  roadList.add(new Road(-5, -w, w, -w));
+  roadList.add(new Road(w, -w, w, 5));
 }
