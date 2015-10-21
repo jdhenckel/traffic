@@ -28,8 +28,8 @@ class Car {
     translate(pos.x, pos.y);
     rotate(angle);
     rect(0, 0, length, width);
-    fill(0,125,255);
-    rect(0, 0, length/5, width-2);
+    fill(0, 125, 255);  // color the wind shield
+    rect(length/6, 0, length/5, width-2); // draw the ws
     popMatrix();
     
     if (debug) {
