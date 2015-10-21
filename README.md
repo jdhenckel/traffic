@@ -5,6 +5,8 @@ Controls are:
 - Pause: 'p'
 - Step: 'o'
 - Recenter: 'r'
+- Rotate and Zoom: Arrow keys
+- Quite: Esc
 
 ## To Do:
 - [ ] make random color generator, so each car can be a diff color  
