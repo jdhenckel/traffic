@@ -5,6 +5,7 @@ class Car {
   float speed;
   float damage;
   float age;
+  color paint;
   PVector destination;
   float width, length;
   ArrayList<Car> neighbor;
@@ -17,15 +18,18 @@ class Car {
     width = 5;
     length = 10;
     neighbor = new ArrayList<Car> ();
+    paint = color(255, 255, 0);
   }  
   
   void draw() {
     pushMatrix();
     noStroke();
-    fill(255,255,0);
+    fill(paint);
     translate(pos.x, pos.y);
     rotate(angle);
     rect(0, 0, length, width);
+    fill(0,125,255);
+    rect(0, 0, length/5, width-2);
     popMatrix();
     
     if (debug) {
