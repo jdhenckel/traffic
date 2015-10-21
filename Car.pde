@@ -18,7 +18,7 @@ class Car {
     width = 5;
     length = 10;
     neighbor = new ArrayList<Car> ();
-    paint = color(255, 255, 0);
+    paint = color(random(0, 255), random(0, 255), random(0, 255));
   }  
   
   void draw() {
