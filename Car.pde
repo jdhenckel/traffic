@@ -5,7 +5,7 @@ class Car {
   float speed;
   float damage;
   float age;
-  color colour;
+  color paint;
   PVector destination;
   float width, length;
   ArrayList<Car> neighbor;
@@ -17,17 +17,20 @@ class Car {
     speed = 50 + random(10);
     width = 4;
     length = 7;
-    colour = randomColor();
+    paint = randomColor();
     neighbor = new ArrayList<Car> ();
+    paint = color(255, 255, 0);
   }  
   
   void draw() {
     pushMatrix();
     noStroke();
-    fill(colour);
+    fill(paint);
     translate(pos.x, pos.y);
     rotate(angle);
     rect(0, 0, length, width);
+    fill(0, 125, 255);  // color the wind shield
+    rect(length/6, 0, length/5, width-2); // draw the ws
     popMatrix();
     
     if (debug) {
