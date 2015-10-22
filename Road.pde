@@ -17,7 +17,7 @@ class Road {
   void draw() {
     stroke(30);             // COLOR OF THE ROAD
     PVector end = end();
-    strokeWeight(10);
+    strokeWeight(9);
     line(start.x, start.y, end.x, end.y);
     strokeWeight(1);
   }
