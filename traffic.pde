@@ -31,7 +31,8 @@ void setup() {
 
 void load() {
   // make a bunch of cars and roads
-  for (int i = 0; i < 50; ++i) carList.add(new Car(i*40-100, 70));
+  for (int i = 0; i < 50; ++i) 
+    carList.add(new Car(i*40-100, 70));
   setup2();
 }
 
@@ -39,7 +40,7 @@ void load() {
 void draw() {
   lookAtKeys();
   generatePairs();
-  steerCars(); //<>//
+  steerCars();
   stepTime();
   beginRender();
   drawRoads();

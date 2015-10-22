@@ -12,14 +12,13 @@ class Car {
   Road currentRoad;
   
   Car(float x, float y) {
-    pos = new PVector(x, y);
+    pos = new PVector(x, y); //<>//
     angle = 1;
     speed = 50 + random(10);
     width = 4;
     length = 7;
     paint = randomColor();
     neighbor = new ArrayList<Car> ();
-    paint = color(255, 255, 0);
   }  
   
   void draw() {
