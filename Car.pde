@@ -5,6 +5,7 @@ class Car {
   float speed;
   float damage;
   float age;
+  boolean isDragging;
   color paint;
   PVector destination;
   float width, length;
@@ -46,6 +47,9 @@ class Car {
   }
   
   void steer() {
+    if (isDragging) {
+      currentRoad = null; return;
+    }
     // follow a road to the end, and then pick a new road
     if (currentRoad == null || currentRoad.end().dist(pos) < 20) {
       pickAnotherRoad();
@@ -86,7 +90,12 @@ class Car {
   }  
   
   void stepTime(float dt) {
-    PVector vel = new PVector(speed * cos(angle), speed * sin(angle));
-    pos.add(vel.mult(dt));
+    if (isDragging) {
+      angle += 2 * dt;    // slowly spin whilst being dragged
+    }
+    else {
+      PVector vel = new PVector(speed * cos(angle), speed * sin(angle));
+      pos.add(vel.mult(dt));
+    }
   }
 }

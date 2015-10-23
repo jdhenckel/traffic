@@ -3,7 +3,7 @@
 
   Use keys WASD to pan, 
   arrows to rotate and zoom. 
-  R = reset, P = pause, o = step
+  R = reset, space = pause, z = step, c/v = mode
   Esc = quit
   
   The unit of measure is a cubit, which is 18 inches. Conveniently
@@ -15,12 +15,11 @@ long prevTime = 0;
 float fps = 60;
 boolean debug = true;
 PVector viewCenter = new PVector(0, 0);
-float viewZoom = 1;
+float viewZoom = 1.75;
 float viewAngle = 0;
 boolean pause = false;
 boolean singleStep = false;
 int inputMode = 0;   // 1=car, 2=road
-PVector mouseDown = new PVector();
 
 //----------------------------
 void setup() {
@@ -101,6 +100,8 @@ void endRender() {
   float y = 20;
   float dy = 15;
   fill(200);
+  if (inputMode==1) text("CAR EDIT MODE", width*0.45, height*0.1);
+  if (inputMode==2) text("ROAD EDIT MODE", width*0.44, height*0.1);
   text("num cars = "+carList.size(), x, y+=dy);
   text("num roads = "+roadList.size(), x, y+=dy);
   text("fps = "+toStr(fps)+(pause?" PAUSE":""), x, y+=dy);

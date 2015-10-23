@@ -19,6 +19,16 @@ float sumAngles(float a, float b) {
 }
 
 
+// return the car nearest to pos (and nearer than dist) or -1 if none are near
+int nearbyCar(PVector pos, float dist) {
+  int best = -1;
+  for (int i = 0; i < carList.size(); ++i) {
+    float d = carList.get(i).pos.dist(pos);
+    if (d < dist) { dist = d; best = i; }
+  }
+  return best;
+}
+
 void setup1() {  
   roadList.add(new Road(0, 11, 150, 0));
   roadList.add(new Road(150, 0, 150, 150));

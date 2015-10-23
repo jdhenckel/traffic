@@ -1,9 +1,15 @@
 //---------------------------
 // These are all the input related functions
 
+// There are TWO ways to read keys: as keyTyped, and as keyPress/release.  We use both in this
+// program. The "typed" are for switches, like mode, pause, etc.  While the Press/release is
+// for smooth controls, like Zoom, pan.  We only use press/release for the mouse buttons.
 
+// The keyPressed adds to this list, The keyRelease removes them from the list.
 IntList keyList = new IntList();
-
+PVector mouseDown = new PVector();
+int mouseDragCounter = 0;
+int drug = -1;    // which car or road is being dragged
 
 void lookAtKeys() {
   float panRate = -5/viewZoom;
@@ -21,28 +27,28 @@ void lookAtKeys() {
       case 37 : viewAngle = sumAngles(viewAngle, turnRate); break;
       case 39 : viewAngle = sumAngles(viewAngle, -turnRate); break;
       case 'r': viewAngle = 0; viewCenter.set(0,0); viewZoom = 1; break;
-      case 'c': inputMode = inputMode == 1 ? 0 : 1; break;
-      case 'v': inputMode = inputMode == 2 ? 0 : 2; break;
     }
   }
   viewCenter.add(move.rotate(viewAngle));
 }
 
 void keyPressed() {
-  int x = (key==CODED) ? keyCode : (int)key;
+  int x = (key==CODED) ? keyCode : key;
   if (!keyList.hasValue(x) && x != 0)
     keyList.push(x);
 }
 
 void keyReleased() {
-  int x = (key==CODED) ? keyCode : (int)key;
+  int x = (key==CODED) ? keyCode : key;
   keyList.removeValue(x);
 }
 
 void keyTyped() {
   switch (key) {
-    case 'p': singleStep = false; pause = !pause; break;
-    case 'o': singleStep = true; pause = false; break;
+    case ' ': singleStep = false; pause = !pause; break;
+    case 'z': singleStep = true; pause = false; break;
+    case 'c': inputMode = inputMode == 1 ? 0 : 1; break;
+    case 'v': inputMode = inputMode == 2 ? 0 : 2; break;
   }
 }
 
@@ -63,12 +69,45 @@ void mouseWheel(MouseEvent e) {
 void mousePressed() {
   PVector pos = viewToWorld(mouseX, mouseY);
   mouseDown.set(pos);
+  mouseDragCounter = 0;
 }
 
 void mouseReleased() {
-  
+  PVector pos = viewToWorld(mouseX, mouseY);
+  if (inputMode==1) { // CAR MODE
+    if (mouseDragCounter==0) {
+      if (mouseButton==LEFT) {
+        // add a new car
+        carList.add(new Car(pos.x, pos.y));
+      }
+      else if (mouseButton==RIGHT) {
+        // delete nearby car
+        int i = nearbyCar(pos, 30);
+        if (i >= 0) carList.remove(i);
+      }
+    }
+    else if (drug >= 0) {
+      // stop dragging the car
+      carList.get(drug).isDragging = false;
+    }
+  }
+  drug = -1;
 }
 
 void mouseDragged() {
-  
+  PVector pos = viewToWorld(mouseX, mouseY);
+  ++mouseDragCounter;
+  if (inputMode==1) {   // CAR MODE
+    if (mouseDragCounter==1) {
+      drug = nearbyCar(pos, 30);
+      if (drug >= 0) {
+        // set flag on car so it can be dragged
+        carList.get(drug).isDragging = true;
+      }
+    }
+    else if (drug >= 0) {
+      // drag the car to the mouse (could use rubber band here)
+      carList.get(drug).pos.set(pos);
+    }
+  }        
 }
