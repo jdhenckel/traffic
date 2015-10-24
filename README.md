@@ -2,10 +2,10 @@
 traffic simulation using Processing3.  
 Controls are:
 - Move: 'w', 'a', 's', 'd'
-- Pause: 'p'   Step: 'o'
+- Pause: Space   Step: 'z'
 - Recenter: 'r'
 - Rotate and Zoom: Arrow keys
-- Quit: Esc
+- Quit: 'q' or Esc
 - Edit Cars: 'c'    Edit Roads: 'v'
 
 ## To Do:
