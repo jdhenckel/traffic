@@ -6,6 +6,7 @@ class Road {
   float speedLimit;
   float damage;
   float usage;
+  boolean isDead;
 
   Road(float sx, float sy, float ex, float ey)  {
     start = new PVector(sx, sy);
@@ -41,7 +42,13 @@ class Road {
   void end(PVector end) { 
     direction = PVector.sub(end, start);
     len = direction.mag();
-    if (len > 0) direction.div(len);
+    if (len > 1e-6) 
+      direction.div(len);
+    else { 
+      float a=random(6.28); 
+      direction.set(cos(a),sin(a));
+    }
+    len = max(2, len);      // MINIMUM ROAD LEN
   }
   
 }

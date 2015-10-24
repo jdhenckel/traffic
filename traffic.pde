@@ -31,9 +31,9 @@ void setup() {
 void load() {
   // make a bunch of cars and roads
   for (int i = 0; i < 50; ++i) 
-    carList.add(new Car(i*40-100, 70));
-  setup2();
-}
+    carList.add(new Car(random(-100,100), random(-100,100)));
+  setup1();
+} //<>//
 
 
 void draw() {

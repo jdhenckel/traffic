@@ -49,6 +49,7 @@ void keyTyped() {
     case 'z': singleStep = true; pause = false; break;
     case 'c': inputMode = inputMode == 1 ? 0 : 1; break;
     case 'v': inputMode = inputMode == 2 ? 0 : 2; break;
+    case 'q': System.exit(0);
   }
 }
 
@@ -134,7 +135,10 @@ void dropRoad() {
     else if (mouseButton==RIGHT) {
       // delete nearby road
       int i = nearbyRoad(pos, 30);
-      if (i >= 0) roadList.remove(i);
+      if (i >= 0) {
+        roadList.get(i).isDead = true;
+        roadList.remove(i);
+      }
     }
   }
 }
@@ -142,12 +146,13 @@ void dropRoad() {
 // Start dragging a road, or keep dragging it
 void dragRoad() {
   PVector pos = viewToWorld(mouseX, mouseY);
+  float snap = mouseButton==LEFT ? 5 : 0;
   if (mouseDragCounter==1) {
-    roadList.add(new Road(nearbyRoadEnd(mouseDown, 5), nearbyRoadStart(pos, 5)));
+    roadList.add(new Road(nearbyRoadEnd(mouseDown, snap), nearbyRoadStart(pos, snap)));
     drug = roadList.size() - 1;
   }
   else if (drug >= 0) {
     // drag the end of the road to the pos
-    roadList.get(drug).end(nearbyRoadStart(pos, 5));
+    roadList.get(drug).end(nearbyRoadStart(pos, snap));
   }
 }

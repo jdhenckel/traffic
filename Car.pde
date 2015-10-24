@@ -36,11 +36,10 @@ class Car {
     if (debug) {
       // draw lines to neighbors
       stroke(200,0,0);
-      for (Car n : neighbor)
-        line(pos.x, pos.y, n.pos.x, n.pos.y);
+      // for (Car n : neighbor) line(pos.x, pos.y, n.pos.x, n.pos.y);
       if (currentRoad != null) {
         PVector v = currentRoad.nearestPoint(pos);
-        stroke(0,128,250);
+        stroke(64,98,0);
         line(pos.x, pos.y, v.x, v.y);
       }
     }
@@ -51,10 +50,19 @@ class Car {
       currentRoad = null; return;
     }
     // follow a road to the end, and then pick a new road
-    if (currentRoad == null || currentRoad.end().dist(pos) < 20) {
+    if (currentRoad == null || currentRoad.isDead) { //<>//
       pickAnotherRoad();
     }
+    if (currentRoad == null) {
+      // no roads! drive in a circle
+      angle = sumAngles(angle, random(0.01,0.02));
+      return;
+    }
     PVector v = currentRoad.nearestPoint(pos);
+    if (currentRoad.end().dist(v) < min(currentRoad.len - 1, 25)) {
+      currentRoad = null;
+      return;
+    }    
     float d = v.dist(pos);
     v.sub(pos);    
     if (d < 20) {
@@ -65,7 +73,7 @@ class Car {
   }
 
   void turnToward(PVector dir) { //<>//
-    float turnRate = .3;
+    float turnRate = .1;
     float a = dir.heading();   
     float da = sumAngles(a, -angle);
     angle = sumAngles(angle, max(-turnRate, min(da, turnRate)));
@@ -78,15 +86,14 @@ class Car {
       Road r = roadList.get(i);
       if (r != currentRoad) {
         PVector v = r.nearestPoint(pos);
-        float d2 = PVector.sub(pos, v).magSq();
-        if (d2 + random(10) < best) {
-          best = d2;
+        float d = v.dist(pos);
+        if (d < best && v.dist(r.end()) > min(r.len - 1, 25)) {
+          best = d;
           nearest = r;
         }
       }
     }
-    if (nearest != null) 
-      currentRoad = nearest;
+    currentRoad = nearest;
   }  
   
   void stepTime(float dt) {
