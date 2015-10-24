@@ -2,11 +2,11 @@
 traffic simulation using Processing3.  
 Controls are:
 - Move: 'w', 'a', 's', 'd'
-- Pause: 'p'
-- Step: 'o'
+- Pause: 'p'   Step: 'o'
 - Recenter: 'r'
 - Rotate and Zoom: Arrow keys
-- Quite: Esc
+- Quit: Esc
+- Edit Cars: 'c'    Edit Roads: 'v'
 
 ## To Do:
 - [x] make random color generator, so each car can be a diff color  
