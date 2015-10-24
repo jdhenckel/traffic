@@ -29,6 +29,38 @@ int nearbyCar(PVector pos, float dist) {
   return best;
 }
 
+int nearbyRoad(PVector pos, float dist) {
+  int best = -1;
+  for (int i = 0; i < roadList.size(); ++i) {
+    PVector p2 = roadList.get(i).nearestPoint(pos);
+    float d = p2.dist(pos);
+    if (d < dist) { dist = d; best = i; }
+  }
+  return best;
+}
+
+// snaps pos to any road start that is nearby
+PVector nearbyRoadStart(PVector pos, float dist) {
+  PVector best = pos;
+  for (int i = 0; i < roadList.size(); ++i) {
+    PVector p2 = roadList.get(i).start;
+    float d = p2.dist(pos);
+    if (d < dist) { dist = d; best = p2; }
+  }
+  return best;
+}
+
+// snaps pos to any road end point that is nearby
+PVector nearbyRoadEnd(PVector pos, float dist) {
+  PVector best = pos;
+  for (int i = 0; i < roadList.size(); ++i) {
+    PVector p2 = roadList.get(i).end();
+    float d = p2.dist(pos);
+    if (d < dist) { dist = d; best = p2; }
+  }
+  return best;
+}
+
 void setup1() {  
   roadList.add(new Road(0, 11, 150, 0));
   roadList.add(new Road(150, 0, 150, 150));

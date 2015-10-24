@@ -73,41 +73,81 @@ void mousePressed() {
 }
 
 void mouseReleased() {
-  PVector pos = viewToWorld(mouseX, mouseY);
-  if (inputMode==1) { // CAR MODE
-    if (mouseDragCounter==0) {
-      if (mouseButton==LEFT) {
-        // add a new car
-        carList.add(new Car(pos.x, pos.y));
-      }
-      else if (mouseButton==RIGHT) {
-        // delete nearby car
-        int i = nearbyCar(pos, 30);
-        if (i >= 0) carList.remove(i);
-      }
-    }
-    else if (drug >= 0) {
-      // stop dragging the car
-      carList.get(drug).isDragging = false;
-    }
-  }
+  if (inputMode==1) dropCar();
+  if (inputMode==2) dropRoad();
   drug = -1;
 }
 
 void mouseDragged() {
-  PVector pos = viewToWorld(mouseX, mouseY);
   ++mouseDragCounter;
-  if (inputMode==1) {   // CAR MODE
-    if (mouseDragCounter==1) {
-      drug = nearbyCar(pos, 30);
-      if (drug >= 0) {
-        // set flag on car so it can be dragged
-        carList.get(drug).isDragging = true;
+  if (inputMode==1) dragCar();
+  if (inputMode==2) dragRoad();        
+}
+
+// Depending on the situation this may add, del, or release a car
+void dropCar() {
+  PVector pos = viewToWorld(mouseX, mouseY);
+  if (mouseDragCounter==0) {
+    if (mouseButton==LEFT) {
+      // add a new car
+      carList.add(new Car(pos.x, pos.y));
+    }
+    else if (mouseButton==RIGHT) {
+      // delete nearby car
+      int i = nearbyCar(pos, 30);
+      if (i >= 0) carList.remove(i);
+    }
+  }
+  else if (drug >= 0) {
+    // stop dragging the car
+    carList.get(drug).isDragging = false;
+  }
+}
+
+// Start dragging a car, or keep dragging it
+void dragCar() {
+  PVector pos = viewToWorld(mouseX, mouseY);
+  if (mouseDragCounter==1) {
+    drug = nearbyCar(pos, 30);
+    if (drug >= 0) {
+      // set flag on car so it can be dragged
+      carList.get(drug).isDragging = true;
+    }
+  }
+  else if (drug >= 0) {
+    // drag the car to the mouse (could use rubber band here)
+    carList.get(drug).pos.set(pos);
+  }
+}
+
+// Depending on the situation add or delete a road
+void dropRoad() {
+  PVector pos = viewToWorld(mouseX, mouseY);
+  if (mouseDragCounter==0) {
+    if (mouseButton==LEFT) {
+      // make a new road connected to the end of the last one
+      int i = roadList.size() - 1;
+      if (i >= 0) {
+        roadList.add(new Road(roadList.get(i).end(), nearbyRoadStart(pos, 5)));
       }
     }
-    else if (drug >= 0) {
-      // drag the car to the mouse (could use rubber band here)
-      carList.get(drug).pos.set(pos);
+    else if (mouseButton==RIGHT) {
+      // delete nearby road
+      int i = nearbyRoad(pos, 30);
+      if (i >= 0) roadList.remove(i);
     }
-  }        
+  }
+}
+
+// Start dragging a road, or keep dragging it
+void dragRoad() {
+  PVector pos = viewToWorld(mouseX, mouseY);
+  if (mouseDragCounter==1) {
+    roadList.add(new Road(nearbyRoadEnd(mouseDown, 5), nearbyRoadStart(pos, 5)));
+    drug = roadList.size() - 1;
+  }
+  else if (drug >= 0) {
+    // drag the end of the road to the pos
+    roadList.get(drug).end(nearbyRoadStart(pos, 5));
+  }
 }

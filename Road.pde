@@ -6,18 +6,21 @@ class Road {
   float speedLimit;
   float damage;
   float usage;
-  
+
   Road(float sx, float sy, float ex, float ey)  {
     start = new PVector(sx, sy);
-    direction = new PVector(ex - sx, ey - sy);
-    len = direction.mag();
-    if (len > 0) direction.div(len);
+    end(new PVector(ex, ey));
+  }
+  
+  Road(PVector start, PVector end)  {
+    this.start = new PVector(start.x, start.y);
+    end(end);
   }
   
   void draw() {
     stroke(30);             // COLOR OF THE ROAD
+    strokeWeight(9);        // WIDTH OF THE ROAD
     PVector end = end();
-    strokeWeight(9);
     line(start.x, start.y, end.x, end.y);
     strokeWeight(1);
   }
@@ -28,10 +31,17 @@ class Road {
     float e = max(0, min(d, len));
     return PVector.mult(direction, e).add(start);    
   }
-
   
+  // gets the road end
   PVector end() { 
     return PVector.add(start, PVector.mult(direction, len)); 
+  }
+  
+  // sets the road end
+  void end(PVector end) { 
+    direction = PVector.sub(end, start);
+    len = direction.mag();
+    if (len > 0) direction.div(len);
   }
   
 }
