@@ -20,11 +20,9 @@ class Car {
     length = 7;
     paint = randomColor();
     neighbor = new ArrayList<Car> ();
-<<<<<<< HEAD
+
     paint = color(random(0, 255), random(0, 255), random(0, 255));
-=======
->>>>>>> origin/master
-  }  
+  }
   
   void draw() {
     pushMatrix();
@@ -54,7 +52,7 @@ class Car {
       currentRoad = null; return;
     }
     // follow a road to the end, and then pick a new road
-    if (currentRoad == null || currentRoad.isDead) { //<>//
+    if (currentRoad == null || currentRoad.isDead) {
       pickAnotherRoad();
     }
     if (currentRoad == null) {
@@ -62,7 +60,7 @@ class Car {
       angle = sumAngles(angle, random(0.01,0.02));
       return;
     }
-    PVector v = currentRoad.nearestPoint(pos);
+    PVector v = currentRoad.nearestPoint(pos); //<>//
     if (currentRoad.end().dist(v) < min(currentRoad.len - 1, 25)) {
       currentRoad = null;
       return;
@@ -76,7 +74,7 @@ class Car {
     turnToward(v);
   }
 
-  void turnToward(PVector dir) { //<>//
+  void turnToward(PVector dir) { 
     float turnRate = .1;
     float a = dir.heading();   
     float da = sumAngles(a, -angle);
