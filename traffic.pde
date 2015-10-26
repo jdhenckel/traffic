@@ -67,7 +67,7 @@ void generatePairs() {
 }
 
 void steerCars() {
-  if (!pause) for (Car c : carList) c.steer();
+  if (!pause) for (Car c : carList) c.driver.steer();
 }
 
 void stepTime() {
