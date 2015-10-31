@@ -99,6 +99,7 @@ color randomColor() {
 color rainbow(int n) {
   // returns 12 colors of the rainbow, 0=red, 4=green, 8=blue
   float[] t = {51,0,0,0,51,102,153,204,255,204,153,102,51,0,0,0,51,102,153,204};
-  if (n < 0 || n > 11) return color(255);
-  return color(t[n+8],t[n+4],t[n]);
+  if (n == 12) return color(255);
+  int m = Math.abs(n) % 12;
+  return color(t[m+8],t[m+4],t[m]);
 }

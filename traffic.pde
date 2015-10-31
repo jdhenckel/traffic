@@ -6,8 +6,8 @@
   R = reset, space = pause, z = step, c/v = mode
   Esc = quit
   
-  The unit of measure is a cubit, which is 18 inches. Conveniently
-  60 cubits per second is about 61 miles per hour. 
+  You can use any units you want, but recommend a cubit, which is 18 inches,
+  because conveniently 60 cubits per second is about 61 miles per hour. 
 */
 ArrayList<Car> carList = new ArrayList<Car>();
 ArrayList<Road> roadList = new ArrayList<Road>();
@@ -30,21 +30,22 @@ void setup() {
 
 void load() {
   // make a bunch of cars and roads
-  for (int i = 0; i < 50; ++i) 
+  for (int i = 0; i < 1500; ++i) 
     carList.add(new Car(random(-100,100), random(-100,100)));
   setup1();
 } //<>//
 
 
 void draw() {
-  lookAtKeys();
-  generatePairs();
-  steerCars();
-  stepTime();
+  markBegin();
+  lookAtKeys();      mark();
+  generatePairs();   mark();
+  steerCars();       mark();
+  stepTime();        mark();
   beginRender();
-  drawRoads();
-  drawCars(); 
-  endRender();
+  drawRoads();       mark();
+  drawCars();        mark();
+  endRender();       mark();
 }
 
 
@@ -95,23 +96,7 @@ void drawCars() {
 }
 
 void endRender() {
-  resetMatrix();   // default window scale and origin
-  float x = 10;
-  float y = 20;
-  float dy = 15;
-  fill(200);
-  if (inputMode==1) text("CAR EDIT MODE", width*0.45, height*0.1);
-  if (inputMode==2) text("ROAD EDIT MODE", width*0.44, height*0.1);
-  text("num cars = "+carList.size(), x, y+=dy);
-  text("num roads = "+roadList.size(), x, y+=dy);
-  text("fps = "+toStr(fps)+(pause?" PAUSE":""), x, y+=dy);
-  text("zoom = "+viewZoom, x, y+=dy);
-  text("center = ("+toStr(viewCenter.x)+", "+toStr(viewCenter.y)+")", x, y+=dy);
-  text("key:"+keydump(), x, y+=dy);
-  text("pause = "+pause, x, y+=dy);
-  String[] mode = {"normal","CAR","ROAD"};
-  text("mode = "+mode[inputMode], x, y+=dy);
-  text("click = ("+toStr(mouseDown.x)+", "+toStr(mouseDown.y)+")", x, y+=dy);
+  drawHUD();
   if (singleStep) pause = true;
 }
 

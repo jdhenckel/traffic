@@ -10,6 +10,7 @@ IntList keyList = new IntList();
 PVector mouseDown = new PVector();
 int mouseDragCounter = 0;
 int drug = -1;    // which car or road is being dragged
+int hud = 3;
 
 void lookAtKeys() {
   float panRate = -5/viewZoom;
@@ -49,6 +50,7 @@ void keyTyped() {
     case 'z': singleStep = true; pause = false; break;
     case 'c': inputMode = inputMode == 1 ? 0 : 1; break;
     case 'v': inputMode = inputMode == 2 ? 0 : 2; break;
+    case 'h': hud = (hud + 1) & 3; break;
     case 'q': System.exit(0);
   }
 }
