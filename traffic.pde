@@ -29,17 +29,17 @@ void setup() {
 }
 
 void load() {
+  randomSeed(4);
   // make a bunch of cars and roads
-  for (int i = 0; i < 1500; ++i) 
+  for (int i = 0; i < 10; ++i) 
     carList.add(new Car(random(-100,100), random(-100,100)));
-  setup1();
-} //<>//
-
-
+  setup3();
+}
+ //<>//
 void draw() {
   markBegin();
   lookAtKeys();      mark();
-  generatePairs();   mark();
+  if (keyList.hasValue('g')) generatePairs_OLD(); else generatePairs();   mark();
   steerCars();       mark();
   stepTime();        mark();
   beginRender();
@@ -49,9 +49,9 @@ void draw() {
 }
 
 
-void generatePairs() {
-  float NEARBY = 20;
-  for (Car c : carList)
+void generatePairs_OLD() {
+  float NEARBY = 10;
+  for (Car c : carList) //<>//
     c.neighbor.clear();
   // todo - replace this loop with something faster
   for (int i = 0; i < carList.size() - 1; ++i) {
@@ -65,6 +65,12 @@ void generatePairs() {
       }
     }
   }
+}
+
+void generatePairs() {
+  Grid grid = new Grid(10);
+      for (Car c : carList) grid.add(c);
+   grid.computeAllNeighbors();
 }
 
 void steerCars() {

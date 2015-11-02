@@ -2,13 +2,16 @@
 // some misc utilities
 
 
-// This converts float to string, and rounds it off 
+// This converts float to string, and rounds it off to three significant digits 
 String toStr(float x) {
   String s = String.valueOf(x);
-  int i = s.indexOf('.');
-  if (i < 0 || abs(x) < 0.9) return s;
-  if (i > 5) return s.substring(0,i);
-  return s.substring(0, min(s.length(), i + 2));
+  if (s.indexOf('e')>0) return s;
+  if (s.indexOf('.')<0) return s;
+  int i;
+  for (i = 0; i < s.length(); ++i) {
+    if (!(s.charAt(i)=='-' || s.charAt(i)=='0' || s.charAt(i)=='.')) break;
+  }
+  return s.substring(0, min(s.length(), max(s.indexOf('.') + 4, i + 3)));
 }
 
 // return a + b, modulus PI
@@ -91,6 +94,12 @@ void setup2() {
   roadList.add(new Road(-5, -w, w, -w));
   roadList.add(new Road(w, -w, w, 5));
 }
+
+void setup3() {
+  float w = 150;
+  roadList.add(new Road(5, 5, -w, 5));
+  roadList.add(new Road(-w, -5, 5, -5));
+} 
 
 color randomColor() {
   return rainbow(int(random(12.1)));

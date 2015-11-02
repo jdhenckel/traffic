@@ -38,7 +38,7 @@ class Car {
     driver.draw(); //<>//
     
     // draw lines to neighbors (for debugging)
-    // stroke(200,0,0); for (Car n : neighbor) line(pos.x, pos.y, n.pos.x, n.pos.y);
+    //stroke(200,0,0); for (Car n : neighbor) line(pos.x, pos.y, n.pos.x, n.pos.y);
     
   }
   
