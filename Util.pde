@@ -1,7 +1,6 @@
 //-----------------------------
 // some misc utilities
 
-
 // This converts float to string, and rounds it off to three significant digits 
 String toStr(float x) {
   String s = String.valueOf(x);

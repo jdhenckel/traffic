@@ -24,7 +24,7 @@ class Collision {
 
   void resolveCar(Car c1) {
     PVector dir1 = PVector.fromAngle(c1.angle);
-    for (Car c2: c1.neighbor) {
+    for (Car c2: grid.getNeighborhood(c1)) {
       PVector offset = PVector.sub(c2.pos, c1.pos);
       if (dir.dot(offset) > 0) {
         PVector dir2 = PVector.fromAngle(c1.angle);

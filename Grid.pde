@@ -7,6 +7,7 @@
 benchmark: 
 GRID 1400 cars, 104 ave pairs, 4.7 ms (macbook i7)
 Brute 1400, 106, 9.0 ms
+Neighborhood iterator: 1400, 206, 0.20 ms
 
 */
 
@@ -21,6 +22,16 @@ class Grid {
     map = new HashMap<GridKey, ArrayList<Car>>();
     this.gap2 = gap * gap;
     this.invGap = 1.0f / gap;
+  }
+
+  void draw() {
+    float g = gap2 * invGap;
+    int m = 10;
+    stroke(90);
+    for (int i = -m; i <= m; ++i) {
+      line(i*g,-m*g,i*g,m*g);
+      line(m*g,i*g,-m*g,i*g);
+    }
   }
 
   void clear() {
@@ -38,49 +49,81 @@ class Grid {
     }
     list.add(car);
   }
-
-  // Set the "neighbor" list of all cars
-
-  void computeAllNeighbors() {
-    for (GridKey key : map.keySet()) {
-      setNeighbors(map.get(key));
-    }
-    for (GridKey key : map.keySet()) {
-      addKeyNeighbors(key);
-    }
-  }
-
-  // This sets the neighbor list of each car in the list to be all the other cars in the list.
   
-  void setNeighbors(ArrayList<Car> list) {
-    for (Car c : list) {
-      c.neighbor.clear();
-      for (Car c2 : list) if (c != c2) c.neighbor.add(c2);
-    }
-  }
-
-  void addKeyNeighbors(GridKey key) {
-    ArrayList<Car> list = map.get(key);
-    for (Car c : list) {
-      addPairsToNeighbors(c, key.next(-1, 1));
-      addPairsToNeighbors(c, key.next(0, 1));
-      addPairsToNeighbors(c, key.next(1, 1));
-      addPairsToNeighbors(c, key.next(1, 0));
-    }
-  }
-  
-  
-  void addPairsToNeighbors(Car c1, GridKey key) {
-    ArrayList<Car> list = map.get(key);
-    if (list == null) return;
-    for (Car c2 : list) {
-      if (PVector.sub(c1.pos, c2.pos).magSq() < gap2) {
-        c1.neighbor.add(c2);
-        c2.neighbor.add(c1);
-      }
-    }  
+  Neighborhood getNeighborhood(Car c) {
+    return new Neighborhood(this, c);
   }
 }  
+
+// This class combines many lists into a single list using logic. No data is actually copied.
+// It is used to make the nine grid cells look like a single list. Also it SKIPS over
+// one of the cars.
+class Neighborhood implements Iterable<Car> {
+  Grid grid;
+  Car car;
+  ArrayList<Car>[] listlist;
+  
+  Neighborhood(Grid grid, Car car) { 
+    this.grid = grid;
+    this.car = car;
+    reset();
+  }
+  
+  void reset() {
+    GridKey key = new GridKey(car.pos, grid.invGap);
+    listlist = new ArrayList[9];
+    listlist[0] = grid.map.get(key);
+    listlist[1] = grid.map.get(key.next(0,1));
+    listlist[2] = grid.map.get(key.next(0,-1));
+    listlist[3] = grid.map.get(key.next(1,0));
+    listlist[4] = grid.map.get(key.next(-1,0));
+    listlist[5] = grid.map.get(key.next(1,1));
+    listlist[6] = grid.map.get(key.next(-1,1));
+    listlist[7] = grid.map.get(key.next(1,-1));
+    listlist[8] = grid.map.get(key.next(-1,-1));
+  }
+  
+  java.util.Iterator<Car> iterator() {
+    return new NeighborhoodIterator(this);
+  }
+}    
+
+
+// This iterates over all the cars that are in the neighborhood 
+class NeighborhoodIterator implements java.util.Iterator<Car> {
+  Neighborhood n;
+  int i, j;
+  Car nextCar;
+  
+  NeighborhoodIterator(Neighborhood n) { 
+    this.n = n; 
+    reset();
+  }
+  
+  void reset() { i=0; j=-1; nextCar=n.car; next(); }
+  
+  boolean hasNext() { return nextCar != null; }
+  
+  // return null if there are no more cars
+  Car next() { 
+    Car temp = nextCar;
+    nextCar = null;
+    for (; i < n.listlist.length; ++i, j=-1) {
+      if (n.listlist[i] != null) {
+        for (++j; j < n.listlist[i].size(); ++j) {
+          Car c = n.listlist[i].get(j);
+          if (c != n.car) { 
+            nextCar = c;
+            return temp;
+          }
+        }
+      }
+    }
+    return temp;
+  }
+  
+  void remove() { throw new UnsupportedOperationException(); }
+}
 
 //-------------------------
 class GridKey {
@@ -116,7 +159,7 @@ class GridKey {
     return (x >= y) ? x * x + x + y : y * y + x;
   }
   
-  
+  // Returns a new key that is next to this key (to the left, below, etc)
   GridKey next(int dx, int dy) {
     return new GridKey(x + dx, y + dy);
   }

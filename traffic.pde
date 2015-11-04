@@ -20,6 +20,7 @@ float viewAngle = 0;
 boolean pause = false;
 boolean singleStep = false;
 int inputMode = 0;   // 1=car, 2=road
+Grid grid;
 
 //----------------------------
 void setup() {
@@ -31,7 +32,7 @@ void setup() {
 void load() {
   randomSeed(4);
   // make a bunch of cars and roads
-  for (int i = 0; i < 10; ++i) 
+  for (int i = 0; i < 1400; ++i) 
     carList.add(new Car(random(-100,100), random(-100,100)));
   setup3();
 }
@@ -39,7 +40,7 @@ void load() {
 void draw() {
   markBegin();
   lookAtKeys();      mark();
-  if (keyList.hasValue('g')) generatePairs_OLD(); else generatePairs();   mark();
+  generatePairs();   mark();
   steerCars();       mark();
   stepTime();        mark();
   beginRender();
@@ -47,30 +48,12 @@ void draw() {
   drawCars();        mark();
   endRender();       mark();
 }
-
-
-void generatePairs_OLD() {
-  float NEARBY = 10;
-  for (Car c : carList) //<>//
-    c.neighbor.clear();
-  // todo - replace this loop with something faster
-  for (int i = 0; i < carList.size() - 1; ++i) {
-    Car icar = carList.get(i);
-    for (int j = i + 1; j < carList.size(); ++j) {
-      Car jcar = carList.get(j);
-      float dist = icar.pos.dist(jcar.pos);
-      if (dist < NEARBY) {
-        icar.neighbor.add(jcar);
-        jcar.neighbor.add(icar);
-      }
-    }
-  }
-}
+ //<>//
 
 void generatePairs() {
-  Grid grid = new Grid(10);
-      for (Car c : carList) grid.add(c);
-   grid.computeAllNeighbors();
+  grid = new Grid(20);
+  for (Car c : carList) 
+    grid.add(c);
 }
 
 void steerCars() {
@@ -94,6 +77,7 @@ void beginRender() {
 }
 
 void drawRoads() {
+  grid.draw();
   for (Road r : roadList) r.draw();
 }
 

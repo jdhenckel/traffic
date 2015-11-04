@@ -82,6 +82,6 @@ void drawHUD() {
 float aveNeighborSize() {
   float t =0;
   for (Car c: carList)
-    t += c.neighbor.size();
+    t += c.neighborCount;
   return t==0 ? 0 : t / carList.size();
 }
