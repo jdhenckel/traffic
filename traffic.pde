@@ -32,9 +32,9 @@ void setup() {
 void load() {
   randomSeed(4);
   // make a bunch of cars and roads
-  for (int i = 0; i < 1400; ++i) 
+  for (int i = 0; i < 140; ++i) 
     carList.add(new Car(random(-100,100), random(-100,100)));
-  setup3();
+  setup2();
 }
  //<>//
 void draw() {

@@ -4,14 +4,18 @@
 class Driver {
   Car car;
   Road currentRoad;
+  int offRoad;    // how long this driver has been off any road
 
   Driver(Car car) {
     this.car = car;
+    offRoad = 0;
   }
 
   void steer() {
+    ++offRoad;
     if (car.isDragging) {
-      currentRoad = null; return;
+      currentRoad = null; 
+      return;
     }
     // follow a road to the end, and then pick a new road
     if (currentRoad == null || currentRoad.isDead) {
@@ -23,10 +27,11 @@ class Driver {
       return;
     }
     PVector v = currentRoad.nearestPoint(car.pos);
-    if (currentRoad.end().dist(v) < min(currentRoad.len - 1, 25)) {
+    if (currentRoad.end().dist(v) < min(currentRoad.len - 1, 20)) {
       currentRoad = null;
       return;
-    }    
+    }
+    offRoad = 0;
     float d = v.dist(car.pos);
     v.sub(car.pos);    
     if (d < 20) {
@@ -47,7 +52,7 @@ class Driver {
   }
 
   void turnToward(PVector dir) {
-    float turnRate = .1;
+    float turnRate = .15;
     float a = dir.heading();   
     float da = sumAngles(a, -car.angle);
     car.angle = sumAngles(car.angle, max(-turnRate, min(da, turnRate)));
@@ -55,16 +60,19 @@ class Driver {
 
   
   void pickAnotherRoad() {
-    float best = 1e9f;
+    float best = offRoad > 10 ? 1e9f : 50;
+    int seen = 0;
     Road nearest = null;
     for (int i = 0; i < roadList.size(); ++i) {
       Road r = roadList.get(i);
       if (r != currentRoad) {
-        PVector v = r.nearestPoint(car.pos);
+        PVector v = r.start;
         float d = v.dist(car.pos);
-        if (d < best && v.dist(r.end()) > min(r.len - 1, 25)) {
+        float dot = PVector.fromAngle(car.angle).dot(r.direction);
+        if (d <= best + 10 && dot > -0.9 && random(seen + .99) < 1) {
           best = d;
           nearest = r;
+          ++seen;
         }
       }
     }

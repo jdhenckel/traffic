@@ -28,7 +28,7 @@ class Grid {
     float g = gap2 * invGap;
     int m = 10;
     stroke(90);
-    for (int i = -m; i <= m; ++i) {
+    for (float i = -m+0.5; i < m; ++i) {
       line(i*g,-m*g,i*g,m*g);
       line(m*g,i*g,-m*g,i*g);
     }

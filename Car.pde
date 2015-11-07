@@ -18,9 +18,7 @@ class Car {
     speed = 50 + random(10);
     width = 4;
     length = 7;
-    //neighbor = new ArrayList<Car> ();
     driver = new Driver(this);  
-   // paint = randomColor();
     paint = color(random(0, 255), random(0, 255), random(0, 255));
   }  
   
@@ -41,7 +39,7 @@ class Car {
     stroke(200,0,0);
     neighborCount = 0;
     for (Car n : grid.getNeighborhood(this)) {
-     // line(pos.x, pos.y, n.pos.x, n.pos.y);
+     if (isDragging) line(pos.x, pos.y, n.pos.x, n.pos.y);
      if (PVector.sub(pos,n.pos).magSq() < 400)
       ++neighborCount;
     }
