@@ -17,14 +17,18 @@ boolean debug = true;
 PVector viewCenter = new PVector(0, 0);
 float viewZoom = 1.75;
 float viewAngle = 0;
+float viewTilt = PI/2;
 boolean pause = false;
 boolean singleStep = false;
+boolean use3D;
 int inputMode = 0;   // 1=car, 2=road
 Grid grid;
 
 //----------------------------
 void setup() {
-  size(800, 600); 
+  // uncomment one of these two lines
+  //size(800, 600, P3D); use3D = true;
+  size(800,600);  use3D = false;
   rectMode(CENTER);
   load();  
 }
@@ -70,10 +74,20 @@ void stepTime() {
 
 void beginRender() {
   background(43, 64, 0);       // COLOR OF THE GRASS
-  translate(.5*width, .5*height); 
-  rotate(viewAngle);
-  scale(viewZoom, -viewZoom);   // flip y axis
-  translate(viewCenter.x, viewCenter.y);
+  if (use3D) {
+    PVector tilt = PVector.fromAngle(viewTilt).mult(500 / viewZoom);
+    println(" tilt " + tilt.x + ", " + tilt.y);
+    PVector eye = PVector.fromAngle(viewAngle).mult(tilt.x);
+    camera(eye.x, eye.y, tilt.y, // eyeX, eyeY, eyeZ
+           viewCenter.x, viewCenter.y, 0.0, // centerX, centerY, centerZ
+           0.0, 1.0, 0.0); // upX, upY, upZ
+  }
+  else {
+    translate(.5*width, .5*height); 
+    rotate(viewAngle);
+    scale(viewZoom, -viewZoom);   // flip y axis
+    translate(viewCenter.x, viewCenter.y);
+  }
 }
 
 void drawRoads() {

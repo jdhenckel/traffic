@@ -23,11 +23,13 @@ void lookAtKeys() {
       case 's': move.y -= panRate; break;
       case 'd': move.x += panRate; break;
       case 'w': move.y += panRate; break;
+      case 'e': if (viewTilt < 1.57) viewTilt += turnRate; break;
+      case 'f': if (viewTilt > .1) viewTilt -= turnRate; break;
       case 38 : viewZoom *= zoomRate; break;
       case 40 : viewZoom /= zoomRate; break;
       case 37 : viewAngle = sumAngles(viewAngle, turnRate); break;
       case 39 : viewAngle = sumAngles(viewAngle, -turnRate); break;
-      case 'r': viewAngle = 0; viewCenter.set(0,0); viewZoom = 1; break;
+      case 'r': viewAngle = 0; viewCenter.set(0,0); viewZoom = 1; viewTilt=PI/2; break;
     }
   }
   viewCenter.add(move.rotate(viewAngle));
@@ -51,7 +53,7 @@ void keyTyped() {
     case 'c': inputMode = inputMode == 1 ? 0 : 1; break;
     case 'v': inputMode = inputMode == 2 ? 0 : 2; break;
     case 'h': hud = (hud + 1) & 3; break;
-    case 'q': System.exit(0);
+    case 'q': exit();
   }
 }
 
