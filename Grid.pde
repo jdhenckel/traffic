@@ -61,53 +61,89 @@ class Neighborhood implements Iterable<Car> {
   Grid grid;
   Car car;
   ArrayList<ArrayList<Car>> listlist;
+  ArrayList<PVector> debuglist;
   
   Neighborhood(Grid grid, Car car) { 
     this.grid = grid;
     this.car = car;
     listlist = new ArrayList();
+    if (car.isDragging) debuglist = new ArrayList();
+  }
+  
+  void draw()  // FOR DEBUG ONLY
+  {
+    if (debuglist != null) {
+      stroke(200,200,0);
+      noFill();
+      for (PVector v : debuglist) 
+        ellipse(v.x + random(1.2), v.y + random(1.2), 3, 3); 
+      for (Car n : this) 
+        line(car.pos.x, car.pos.y, n.pos.x, n.pos.y);
+    }
+  }
+
+  void reset() {
+    listlist.clear();
+    if (debuglist != null) debuglist.clear();
   }
   
   // Note: radius=4 can return up to 25 cells
   Neighborhood diamond(int radius) {
+    reset();
     GridKey key = new GridKey(car.pos, grid.invGap);
     listlist.add(grid.map.get(key));
     for (int i = 1; i < radius; ++i) {
       for (int j = 0; j < i; ++j) {
-        listlistAdd(grid.map.get(key.next(i-j,j)));
-        listlistAdd(grid.map.get(key.next(-i+j,-j)));
-        listlistAdd(grid.map.get(key.next(j,-i+j)));
-        listlistAdd(grid.map.get(key.next(-j,i-j)));
+        listlistAdd(key,i-j,j);
+        listlistAdd(key,-i+j,-j);
+        listlistAdd(key,j,-i+j);
+        listlistAdd(key,-j,i-j);
       }
     }
     return this;
   }
   
-  // Note: radius=4 can return up to 16 cells
-  Neighborhood cone(int radius) {
+  Neighborhood circle(int radius) {
+    reset();
     GridKey key = new GridKey(car.pos, grid.invGap);
     listlist.add(grid.map.get(key));
-    if (radius < 1) 
+    int r2 = radius * radius;
+    for (int i = 1; i < radius; ++i) {
+      int m = r2 - i * i;
+      for (int j = 0; j * j < m; ++j) {
+          listlistAdd(key,i,j);
+          listlistAdd(key,-i,-j);
+          listlistAdd(key,-j,i);
+          listlistAdd(key,j,-i);
+      }          
+    }
+    return this;
+  }
+  
+  // this is a necktie shape in the direction the car is facing.
+  Neighborhood cone(int radius) {
+    reset();
+    GridKey key = new GridKey(car.pos, grid.invGap);
+    listlist.add(grid.map.get(key));
+    if (radius < 2) 
       return this;
     PVector dir = PVector.fromAngle(car.angle);
     int dx, dy;
+    float a;
     if (abs(dir.x) > abs(dir.y)) {
-      dx = 0; dy = sign(dir.y);
-      dir.mult(grid.gap / abs(dir.x));
+      dx = 0; dy = sign(dir.y); a = abs(dir.x);
     }
     else {
-      dx = sign(dir.x); dy = 0;
-      dir.mult(grid.gap / abs(dir.y));
+      dx = sign(dir.x); dy = 0; a = abs(dir.y);
     }    
-    listlistAdd(grid.map.get(key.next(dx,dy)));
-    listlistAdd(grid.map.get(key.next(-dx,-dy)));
-    PVector d = new PVector();
-    for (int i = 1; i <= radius; ++i) {
-      GridKey k2 = new GridKey(d.add(dir), grid.invGap);
-      listlistAdd(grid.map.get(k2));
-      for (int j = 1; j <= (i + 2) / 2; ++j) {
-        listlistAdd(grid.map.get(k2.next(j*dx, j*dy)));
-        listlistAdd(grid.map.get(k2.next(-j*dx, -j*dy)));
+    dir.mult(grid.gap / a);
+    if (a < .95) listlistAdd(key,dx,dy);
+    PVector axis = car.pos.copy();
+    for (int i = 1; i < radius * a; ++i) {
+      GridKey keyOnAxis = new GridKey(axis.add(dir), grid.invGap);
+      int w = min(i/2 + 1, radius - i - 1);
+      for (int j = -w; j <= w; ++j) {
+        listlistAdd(keyOnAxis, j*dx, j*dy);
       }
     }
     return this;
@@ -122,13 +158,19 @@ class Neighborhood implements Iterable<Car> {
   }
   
   
+  void listlistAdd(GridKey key, int i, int j) {
+      if (debuglist != null) debuglist.add(new PVector(grid.gap*(key.x + i),grid.gap*(key.y+j)));
+      listlistAdd(grid.map.get(key.next(i,j)));
+   }
+  
+  
   
   java.util.Iterator<Car> iterator() {
     return new NeighborhoodIterator(this);
   }
 }    
 
-
+//-----------------------------------------------------------------
 // This iterates over all the cars that are in the neighborhood 
 class NeighborhoodIterator implements java.util.Iterator<Car> {
   Neighborhood n;
@@ -150,11 +192,13 @@ class NeighborhoodIterator implements java.util.Iterator<Car> {
     nextCar = null;
     for (; i < n.listlist.size(); ++i, j=-1) {
       ArrayList<Car> list = n.listlist.get(i);
-      for (++j; j < list.size(); ++j) {
-        Car c = list.get(j);
-        if (c != n.car) { 
-          nextCar = c;
-          return temp;
+      if (list != null) {
+        for (++j; j < list.size(); ++j) {
+          Car c = list.get(j);
+          if (c != n.car) { 
+            nextCar = c;
+            return temp;
+          }
         }
       }
     }
@@ -164,7 +208,7 @@ class NeighborhoodIterator implements java.util.Iterator<Car> {
   void remove() { throw new UnsupportedOperationException(); }
 }
 
-//-------------------------
+//------------------------------------------------------------------
 class GridKey {
   int x; int y;
   GridKey() {}

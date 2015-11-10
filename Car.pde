@@ -14,7 +14,7 @@ class Car {
   
   Car(float x, float y) {
     pos = new PVector(x, y); //<>//
-    angle = 1;
+    angle = random(6);
     speed = 50 + random(10);
     width = 4;
     length = 7;
@@ -41,18 +41,20 @@ class Car {
     driver.draw(); //<>//
     
     // draw lines to neighbors (for debugging)
+    stroke(0); PVector f = PVector.fromAngle(angle).mult(140/viewZoom).add(pos);
+      if (isDragging) line(pos.x, pos.y, f.x, f.y);
     stroke(200,0,0);
     neighborCount = 0;
-    for (Car n : grid.getNeighborhood(this)) {
-     if (isDragging) line(pos.x, pos.y, n.pos.x, n.pos.y);
-     if (PVector.sub(pos,n.pos).magSq() < 400)
+    Neighborhood nn = grid.getNeighborhood(this).cone((int)(7/viewZoom));
+    for (Car n : nn) {
       ++neighborCount;
     }
+    if (isDragging) nn.draw();
   }
   
   void stepTime(float dt) { //<>//
     if (isDragging) {
-      angle += 2 * dt;    // slowly spin whilst being dragged
+      angle += .5 * dt;    // slowly spin whilst being dragged
     }
     else {
       PVector vel = new PVector(speed * cos(angle), speed * sin(angle));
