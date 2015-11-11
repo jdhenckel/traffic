@@ -7,20 +7,22 @@ class Car {
   float damage;
   float age;
   boolean isDragging;
+  boolean isSpecial;
   int paint;
   PVector destination;
   float width, length;
   Driver driver;
   int neighborCount;
   
-  Car(float x, float y) {
+  Car(float x, float y, boolean spec) {
     pos = new PVector(x, y); //<>//
-    angle = random(6);
+    angle = random(6.28);
     speed = 50 + random(10);
     width = 4;
     length = 9;
+    isSpecial = spec;
     driver = new Driver(this);  
-    paint = (int) random(6); //color(random(0, 255), random(0, 255), random(0, 255));
+    paint = (int) random(6); 
   }  
   
   void draw() {
@@ -33,31 +35,40 @@ class Car {
       box(length, width, width/2);
     }
     else {
-      if (viewZoom<5) 
-      rect(0, 0, length, width);
+      if (viewZoom < 5) {
+        rect(0, 0, length, width);
+        if (viewZoom > 2) {
+          fill(0, 125, 255);  // color the wind shield
+          rect(length/6, 0, length/5, width-2); // draw the ws
+        }
+      }
       else
-      drawCarImage(paint,0,0,0.045);
-      //if (viewZoom > 10) {
-      //  fill(0, 125, 255);  // color the wind shield
-      //  rect(length/6, 0, length/5, width-2); // draw the ws
-      //}
-      
+        drawCarImage(paint,0,0,0.045);   
     }
     popMatrix();
     
     driver.draw(); //<>//
     
     // draw lines to neighbors (for debugging)
-    stroke(0); PVector f = PVector.fromAngle(angle).mult(140/viewZoom).add(pos);
-      if (isDragging) line(pos.x, pos.y, f.x, f.y);
-    stroke(200,0,0);
-    neighborCount = 0;
-    Neighborhood nn = grid.getNeighborhood(this).cone((int)(7/viewZoom));
-    for (Car n : nn) {
-      ++neighborCount;
+    if (isDragging || isSpecial) {
+      stroke(0); 
+      PVector f = direction().mult(140/viewZoom).add(pos);
+      line(pos.x, pos.y, f.x, f.y);
+      stroke(200,0,0);
+      Neighborhood nn = grid.getNeighborhood(this).cone((int)(7/viewZoom));
+      neighborCount = nn.size();
+      nn.draw();
     }
-    if (isDragging) nn.draw();
   }
+  
+  PVector direction() {
+    return PVector.fromAngle(angle);
+  }
+    
+  PVector velocity() {
+    return PVector.fromAngle(angle).mult(speed);
+  }
+  
   
   void stepTime(float dt) { //<>//
     if (isDragging) {

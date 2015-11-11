@@ -22,6 +22,30 @@ float sumAngles(float a, float b) {
 }
 
 
+PVector viewToWorld(float x, float y) {
+  // this takes a pixel on the window (origin top left) and maps it to world space
+  PVector v = new PVector(x - .5 * width, y - .5 * height);
+  v.rotate(-viewAngle);
+  v.set(v.x / viewZoom, v.y / -viewZoom);
+  v.sub(viewCenter);
+  return v;
+}
+
+
+PVector worldToView(PVector pos) {
+  PVector v = PVector.add(viewCenter, pos);
+  v.set(v.x * viewZoom, v.y * -viewZoom);
+  v.rotate(viewAngle);
+  v.add(width * .5, height * .5);
+  return v;
+}
+
+
+// Returns true if the triangle {a,b,c} is clockwise (right handed) 
+boolean isCW(PVector a, PVector b, PVector c) {
+  return (c.x-a.x)*(a.y-b.y)-(c.y-a.y)*(a.x-b.x) <= 0;
+}
+
 // return the car nearest to pos (and nearer than dist) or -1 if none are near
 int nearbyCar(PVector pos, float dist) {
   int best = -1;

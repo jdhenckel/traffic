@@ -11,6 +11,9 @@ PVector mouseDown = new PVector();
 int mouseDragCounter = 0;
 int drug = -1;    // which car or road is being dragged
 int hud = 3;
+Car chaseCar;
+
+// This is called once per frame
 
 void lookAtKeys() {
   float panRate = -5/viewZoom;
@@ -33,6 +36,9 @@ void lookAtKeys() {
     }
   }
   viewCenter.add(move.rotate(viewAngle));
+  if (chaseCar != null) {
+    chaseView(chaseCar.pos, sumAngles(chaseCar.angle, -PI/2));
+  }
 }
 
 void keyPressed() {
@@ -52,20 +58,35 @@ void keyTyped() {
     case 'z': singleStep = true; pause = false; break;
     case 'c': inputMode = inputMode == 1 ? 0 : 1; break;
     case 'v': inputMode = inputMode == 2 ? 0 : 2; break;
+    case 'x': setChaseMode(); break;
     case 'h': hud = (hud + 1) & 3; break;
     case 'q': exit();
   }
 }
-
-PVector viewToWorld(int x, int y) {
-  // this takes a pixel on the window (origin top left) and maps it to world space
-  PVector v = new PVector(x - .5 * width, y - .5 * height);
-  v.rotate(-viewAngle);
-  v.set(v.x / viewZoom, v.y / -viewZoom);
-  v.sub(viewCenter);
-  return v;
-}
   
+
+void setChaseMode() {
+  // TOGGLE the chase mode
+  if (chaseCar!=null) 
+    chaseCar = null;
+  else {    
+    PVector pos = viewToWorld(mouseX, mouseY);
+    int i = nearbyCar(pos, 100);
+    if (i >= 0) 
+      chaseCar = carList.get(i);
+      chaseCar.isSpecial = true;
+  }
+}
+
+
+void chaseView(PVector pos, float angle) {
+  // Gradually change the view center and angle to match inputs
+  viewCenter.add(PVector.add(pos, viewCenter).mult(-.1));
+  viewAngle += sumAngles(angle, -viewAngle) * viewZoom / 100;
+}
+
+
+
 void mouseWheel(MouseEvent e) {
   float zoomRate = 1.03;
   viewZoom *= pow(zoomRate, -e.getCount());
@@ -95,7 +116,7 @@ void dropCar() {
   if (mouseDragCounter==0) {
     if (mouseButton==LEFT) {
       // add a new car
-      carList.add(new Car(pos.x, pos.y));
+      carList.add(new Car(pos.x, pos.y, random(4)<1));
     }
     else if (mouseButton==RIGHT) {
       // delete nearby car

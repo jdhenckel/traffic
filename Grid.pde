@@ -81,6 +81,14 @@ class Neighborhood implements Iterable<Car> {
         line(car.pos.x, car.pos.y, n.pos.x, n.pos.y);
     }
   }
+  
+  int size() {
+    int s = 0;
+    if (listlist != null) 
+      for (ArrayList a : listlist) 
+        if (a != null) s += a.size();
+    return s;
+  }
 
   void reset() {
     listlist.clear();
@@ -218,13 +226,13 @@ class GridKey {
   }
   
   GridKey(PVector v, float invGap) { 
-    this.x = Math.round(v.x * invGap); 
-    this.y = Math.round(v.y * invGap); 
+    this.x = round(v.x * invGap); 
+    this.y = round(v.y * invGap); 
   }
 
   // return a unique int for each x,y value
   int hashCode() {
-    return quadrant(x, y) + 4 * elegant(Math.abs(x), Math.abs(y));
+    return quadrant(x, y) + 4 * elegant(abs(x), abs(y));
   }
   
   boolean equals(Object other) {

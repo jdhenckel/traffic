@@ -15,7 +15,7 @@ long prevTime = 0;
 float fps = 60;
 boolean debug = true;
 PVector viewCenter = new PVector(0, 0);
-float viewZoom = 5.75;
+float viewZoom = 1;
 float viewAngle = 0;
 float viewTilt = PI/2;
 boolean pause = false;
@@ -27,8 +27,8 @@ Grid grid;
 //----------------------------
 void setup() {
   // uncomment one of these two lines
-  //size(800, 600, P3D); use3D = true;
-  size(800,600);  use3D = false;
+  //size(1000, 750, P3D); use3D = true;
+  size(1000,750);  use3D = false;
   rectMode(CENTER);
   load();  
 }
@@ -37,7 +37,7 @@ void load() {
   randomSeed(4);
   // make a bunch of cars and roads
   for (int i = 0; i < 140; ++i) 
-    carList.add(new Car(random(-100,100), random(-100,100)));
+    carList.add(new Car(random(-100, 100), random(-100, 100), false));
   setup2();
 }
  //<>//
@@ -96,16 +96,17 @@ void drawRoads() {
 }
 
 void drawCars() {
-  for (Car c : carList) c.draw();
+  PVector a = viewToWorld(0,0); // top left corner of the viewport
+  PVector b = viewToWorld(width,0);
+  PVector c = viewToWorld(width,height); //<>//
+  PVector d = viewToWorld(0,height);
+  for (Car car : carList) {
+    if (isCW(a,b,car.pos) && isCW(b,c,car.pos) && isCW(c,d,car.pos) && isCW(d,a,car.pos))
+      car.draw();
+  }
 }
 
 void endRender() {
   drawHUD();
   if (singleStep) pause = true;
-}
-
-String keydump() {
-  String s = "";
-  for (int i : keyList) s += ", "+i;
-  return s;
 }

@@ -5,13 +5,23 @@ class Driver {
   Car car;
   Road currentRoad;
   int offRoad;    // how long this driver has been off any road
-
+  float maxAccel = 10;  // about .5g is typical 
+  float maxDecel = 20;  // about 1g is max brake decel
+  float maxVel = 60;    // cubits per sec (aka mph)
+  float maxVelOffRoad = 25;
+  float turnRate = .15;
+  
   Driver(Car car) {
     this.car = car;
     offRoad = 0;
   }
-
+  
   void steer() {
+    followTheRoad();
+    adjustMySpeed();
+  }
+
+  void followTheRoad() {
     ++offRoad;
     if (car.isDragging) {
       currentRoad = null; 
@@ -40,6 +50,33 @@ class Driver {
     }
     turnToward(v);
   }
+  
+  
+  void adjustMySpeed() {
+    
+  }
+  
+  
+  void topSpeed() {
+    // Find a top speed recommendation based on not crashing into another car
+    float range = stoppingDistance() * grid.invGap;
+    Neighborhood nh = grid.getNeighborhood(car).cone((int) range);
+    PVector vel = car.velocity();
+    for (Car c : nh) {
+      PVector relativeVel = c.velocity().sub(vel);
+    }
+  }
+  
+  
+  float stoppingDistance() {
+    // return the best case scenario for stopping distance, given current speed
+    return car.speed*car.speed/(2*maxDecel);
+  }
+  
+  float timeToImpact(Car c) {
+    // compute how many seconds it will be until we hit c.  Or return 1000 if never.
+    return 1000;
+  }
 
   void draw() {
     // For debugging stuff
@@ -52,7 +89,6 @@ class Driver {
   }
 
   void turnToward(PVector dir) {
-    float turnRate = .15;
     float a = dir.heading();   
     float da = sumAngles(a, -car.angle);
     car.angle = sumAngles(car.angle, max(-turnRate, min(da, turnRate)));

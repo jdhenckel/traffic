@@ -79,6 +79,12 @@ void drawHUD() {
   text("click = ("+toStr(mouseDown.x)+", "+toStr(mouseDown.y)+")", x, y+=dy);
 }
 
+String keydump() {
+  String s = "";
+  for (int i : keyList) s += ", "+i;
+  return s;
+}
+
 float aveNeighborSize() {
   float t =0;
   for (Car c: carList)
