@@ -4,6 +4,7 @@ class Car {
   PVector pos;
   float angle;
   float speed;
+  float accel;
   float damage;
   float age;
   boolean isDragging;
@@ -75,7 +76,10 @@ class Car {
       angle += .5 * dt;    // slowly spin whilst being dragged
     }
     else {
-      PVector vel = new PVector(speed * cos(angle), speed * sin(angle));
+      float vbar = speed + accel * dt * .5;
+      speed += accel * dt;
+      accel = 0;
+      PVector vel = PVector.fromAngle(angle).mult(vbar);
       pos.add(vel.mult(dt));
     }
   }

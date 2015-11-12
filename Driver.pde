@@ -11,6 +11,10 @@ class Driver {
   float maxVelOffRoad = 25;
   float turnRate = .15;
   
+  Car dangerCar;   // a car that we might hit, or null if none
+  float dangerDist;
+  float dangerTime;
+  
   Driver(Car car) {
     this.car = car;
     offRoad = 0;
@@ -53,17 +57,45 @@ class Driver {
   
   
   void adjustMySpeed() {
-    
+    // This does not change the speed, but it sets the 'accel' so the stepTime will do it
+    float topSpeed = maxVel;
+    if (offRoad > 10) 
+      topSpeed = maxVelOffRoad;
+    checkForDanger();
+    if (dangerCar != null) {
+      topSpeed = min(topSpeed, dangerDist / dangerTime);
+    }
+    car.accel = max(-maxDecel, min(topSpeed - car.speed, maxAccel));
   }
   
   
-  void topSpeed() {
-    // Find a top speed recommendation based on not crashing into another car
-    float range = stoppingDistance() * grid.invGap;
+  // Sets the dangerCar, dangerDistance, etc
+  void checkForDanger() {
+    dangerCar = null;
+    dangerDist = 100;
+    dangerTime = 1;
+    float range = stoppingDistance() * grid.invGap + 1;
     Neighborhood nh = grid.getNeighborhood(car).cone((int) range);
+    float small = .00001;
     PVector vel = car.velocity();
     for (Car c : nh) {
-      PVector relativeVel = c.velocity().sub(vel);
+      PVector sep = PVector.sub(c.pos, car.pos);
+      if (sep.dot(vel) < 0) continue;  // ignore stuff behind me
+      PVector relVel = c.velocity().sub(vel);
+      float relSpeed = relVel.mag();
+      if (relSpeed < small) {
+        // check danger based on distance only, and response time
+      } 
+      else {
+        PVector dir = PVector.div(relVel, relSpeed);
+        float moveDist = -sep.dot(dir);
+        float base = PVector.mult(dir,moveDist).add(sep).mag();
+        float minBase = car.width + abs(sin(sumAngles(car.angle, -c.angle)) * (car.length - car.width) * .5);
+        if (base < minBase) {
+          // found danger!
+          
+        }
+      } 
     }
   }
   

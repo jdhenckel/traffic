@@ -68,8 +68,12 @@ void stepTime() {
   long t = System.nanoTime();
   float dt = (t - prevTime) / 1e9f;
   prevTime = t;
+  // smooth out the fps
   fps = fps*.99 + .01/dt;
-  if (!pause) for (Car c : carList) c.stepTime(1/60.f);  
+  if (!pause) {
+    for (Car c : carList) 
+      c.stepTime(1 / fps);  
+  }
 }
 
 void beginRender() {
