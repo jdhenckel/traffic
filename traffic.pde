@@ -23,6 +23,7 @@ boolean singleStep = false;
 boolean use3D;
 int inputMode = 0;   // 1=car, 2=road
 Grid grid;
+int stepCounter = 0;
 
 //----------------------------
 void setup() {
@@ -36,12 +37,14 @@ void setup() {
 void load() {
   randomSeed(4);
   // make a bunch of cars and roads
-  for (int i = 0; i < 140; ++i) 
-    carList.add(new Car(random(-100, 100), random(-100, 100), false));
-  setup2();
+  //for (int i = 0; i < 2; ++i)     carList.add(new Car(random(-100, 100), random(-100, 100), false));
+  setup3();
+  carList.add(new Car(150, 0, false));
+  carList.add(new Car(-150, 0, false));
 }
- //<>//
+
 void draw() {
+  ++stepCounter;
   markBegin();
   lookAtKeys();      mark();
   generatePairs();   mark();
@@ -52,7 +55,7 @@ void draw() {
   drawCars();        mark();
   endRender();       mark();
 }
- //<>//
+
 
 void generatePairs() {
   grid = new Grid(20);
@@ -102,7 +105,7 @@ void drawRoads() {
 void drawCars() {
   PVector a = viewToWorld(0,0); // top left corner of the viewport
   PVector b = viewToWorld(width,0);
-  PVector c = viewToWorld(width,height); //<>//
+  PVector c = viewToWorld(width,height);
   PVector d = viewToWorld(0,height);
   for (Car car : carList) {
     if (isCW(a,b,car.pos) && isCW(b,c,car.pos) && isCW(c,d,car.pos) && isCW(d,a,car.pos))

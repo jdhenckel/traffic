@@ -120,9 +120,11 @@ void setup2() {
 
 void setup3() {
   float w = 150;
-  roadList.add(new Road(5, 5, -w, 5));
-  roadList.add(new Road(-w, -5, 5, -5));
+  float x = 2;
+  roadList.add(new Road(x, x, -w, x));
+  roadList.add(new Road(-w, -x, x, -x));
 } 
+
 
 color randomColor() {
   return rainbow(int(random(12.1)));

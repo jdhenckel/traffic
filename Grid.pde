@@ -190,9 +190,15 @@ class NeighborhoodIterator implements java.util.Iterator<Car> {
     reset();
   }
   
-  void reset() { i=0; j=-1; nextCar=n.car; next(); }
+  void reset() { 
+    i=0; j=-1; 
+    nextCar=n.car; 
+    next(); 
+  }
   
-  boolean hasNext() { return nextCar != null; }
+  boolean hasNext() { 
+    return nextCar != null; 
+  }
   
   // return null if there are no more cars
   Car next() { 

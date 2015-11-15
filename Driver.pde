@@ -63,19 +63,26 @@ class Driver {
       topSpeed = maxVelOffRoad;
     checkForDanger();
     if (dangerCar != null) {
-      topSpeed = min(topSpeed, dangerDist / dangerTime);
+      // safe speed = maxDecel * time.  But allow a little extra time
+      //float stopat = car.speed * dangerTime;
+      float safeSpeed = 0; 
+      //sqrt(max(0, 2 * stopat * maxDecel));
+      // max(0, maxDecel * (dangerTime - .25));
+      topSpeed = min(topSpeed, safeSpeed);
     }
-    car.accel = max(-maxDecel, min(topSpeed - car.speed, maxAccel));
+    car.accel = max(-maxDecel, min((topSpeed - car.speed) * fps, maxAccel));
+    if (dangerCar != null)
+      println("found danger " + stepCounter+ " p=" + dangerCar.paint + " a="+car.accel + " toi="+toStr(dangerTime) + " top="+topSpeed+" speed="+car.speed +" d="+dangerDist);
   }
   
   
   // Sets the dangerCar, dangerDistance, etc
-  void checkForDanger() {
+  void checkForDanger() { //<>//
     dangerCar = null;
     dangerDist = 100;
-    dangerTime = 1;
-    float range = stoppingDistance() * grid.invGap + 1;
-    Neighborhood nh = grid.getNeighborhood(car).cone((int) range);
+    dangerTime = 100;   // ????
+    float range = 3 * stoppingDistance() * grid.invGap + 1;
+    Neighborhood nh = grid.getNeighborhood(car).cone((int) range); //<>//
     float small = .00001;
     PVector vel = car.velocity();
     for (Car c : nh) {
@@ -85,15 +92,22 @@ class Driver {
       float relSpeed = relVel.mag();
       if (relSpeed < small) {
         // check danger based on distance only, and response time
+        // todo - also check when it isnt small??
       } 
       else {
         PVector dir = PVector.div(relVel, relSpeed);
         float moveDist = -sep.dot(dir);
         float base = PVector.mult(dir,moveDist).add(sep).mag();
-        float minBase = car.width + abs(sin(sumAngles(car.angle, -c.angle)) * (car.length - car.width) * .5);
+        float minBase = car.width * 100;                    // ERROR ?>  
+        // + abs(sin(sumAngles(car.angle, -c.angle)) * (car.length - car.width) * .5);
         if (base < minBase) {
           // found danger!
-          
+          float time = moveDist / relSpeed;
+          if (time < dangerTime) {
+            dangerTime = time;
+            dangerDist = moveDist;       // hmm, this isn't really useful
+            dangerCar = c;
+          }
         }
       } 
     }
