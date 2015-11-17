@@ -6,11 +6,9 @@ class Car {
   float speed;
   float accel;
   float damage;
-  float age;
   boolean isDragging;
   boolean isSpecial;
   int paint;
-  PVector destination;
   float width, length;
   Driver driver;
   int neighborCount;
@@ -49,17 +47,6 @@ class Car {
     popMatrix();
     
     driver.draw(); //<>//
-    
-    // draw lines to neighbors (for debugging)
-    if (isDragging || isSpecial) {
-      stroke(0); 
-      PVector f = direction().mult(140/viewZoom).add(pos);
-      line(pos.x, pos.y, f.x, f.y);
-      stroke(200,0,0);
-      Neighborhood nn = grid.getNeighborhood(this).cone((int)(7/viewZoom));
-      neighborCount = nn.size();
-      nn.draw();
-    }
   }
   
   PVector direction() {
@@ -76,12 +63,17 @@ class Car {
       angle += .5 * dt;    // slowly spin whilst being dragged
     }
     else {
-      float vbar = speed + accel * dt;
+      float vbar = speed + accel * dt * 0.5f;
       speed += accel * dt;
       accel = 0;
       PVector vel = PVector.fromAngle(angle).mult(vbar);
       pos.add(vel.mult(dt));
     }
+  }
+  
+  
+  void addWatch(Car car) {
+     // todo add the car to my watch list in my driver 
   }
 }
 

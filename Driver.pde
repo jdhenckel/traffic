@@ -11,6 +11,8 @@ class Driver {
   float maxVelOffRoad = 25;
   float turnRate = .15;
   
+  //  TODO - change to "awareList" that is many cars in a list that is maintained by sweeping cone.
+  
   Car dangerCar;   // a car that we might hit, or null if none
   float dangerDist;
   float dangerTime;
@@ -57,6 +59,19 @@ class Driver {
   
   
   void adjustMySpeed() {
+    if (car.damage > 5) {
+      car.accel = -maxDecel;
+      car.damage = 0;
+    }
+    else if (offRoad > 10) {
+      if (car.speed < maxVelOffRoad) car.accel = maxAccel;
+    }
+    else {
+      if (car.speed < maxVel) car.accel = maxAccel;
+    }    
+  }
+  
+  void adjustMySpeed_OLDCODE() {
     // This does not change the speed, but it sets the 'accel' so the stepTime will do it
     float topSpeed = maxVel;
     if (offRoad > 10) 
@@ -71,17 +86,18 @@ class Driver {
       topSpeed = min(topSpeed, safeSpeed);
     }
     car.accel = max(-maxDecel, min((topSpeed - car.speed) * fps, maxAccel));
-    if (dangerCar != null)
-      println("found danger " + stepCounter+ " p=" + dangerCar.paint + " a="+car.accel + " toi="+toStr(dangerTime) + " top="+topSpeed+" speed="+car.speed +" d="+dangerDist);
+    if (dangerCar != null && car.isSpecial)
+      println("found danger " + stepCounter+ " p=" + dangerCar.paint + " a="+car.accel + 
+      " toi="+toStr(dangerTime) + " top="+topSpeed+" speed="+car.speed +" d="+dangerDist);
   }
   
   
   // Sets the dangerCar, dangerDistance, etc
-  void checkForDanger() { //<>//
+  void checkForDanger() {
     dangerCar = null;
     dangerDist = 100;
     dangerTime = 100;   // ????
-    float range = 3 * stoppingDistance() * grid.invGap + 1;
+    float range = 5 * stoppingDistance() * grid.invGap + 1;
     Neighborhood nh = grid.getNeighborhood(car).cone((int) range); //<>//
     float small = .00001;
     PVector vel = car.velocity();
@@ -107,6 +123,10 @@ class Driver {
             dangerTime = time;
             dangerDist = moveDist;       // hmm, this isn't really useful
             dangerCar = c;
+            
+            if (car.isSpecial) {
+              addDebugLine(car.pos, car.velocity().mult(time).add(car.pos));
+            }
           }
         }
       } 

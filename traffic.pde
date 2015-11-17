@@ -15,10 +15,10 @@ long prevTime = 0;
 float fps = 60;
 boolean debug = true;
 PVector viewCenter = new PVector(0, 0);
-float viewZoom = 1;
+float viewZoom = 2;
 float viewAngle = 0;
 float viewTilt = PI/2;
-boolean pause = false;
+boolean pause = true;
 boolean singleStep = false;
 boolean use3D;
 int inputMode = 0;   // 1=car, 2=road
@@ -32,22 +32,23 @@ void setup() {
   size(1000,750);  use3D = false;
   rectMode(CENTER);
   load();  
+  grid = new Grid(20);
 }
 
 void load() {
   randomSeed(4);
   // make a bunch of cars and roads
-  //for (int i = 0; i < 2; ++i)     carList.add(new Car(random(-100, 100), random(-100, 100), false));
-  setup3();
-  carList.add(new Car(150, 0, false));
-  carList.add(new Car(-150, 0, false));
+  for (int i = 0; i < 80; ++i)     carList.add(new Car(random(-200, 200), random(-200, 200), false));
+  setup2();
+  //carList.add(new Car(0, 0, true));  carList.add(new Car(3, 0, false));
 }
 
 void draw() {
-  ++stepCounter;
+  if (!pause) ++stepCounter;
   markBegin();
   lookAtKeys();      mark();
-  generatePairs();   mark();
+  populateGrid();   mark(); 
+  resolveCollisions();  mark(); //<>//
   steerCars();       mark();
   stepTime();        mark();
   beginRender();
@@ -57,8 +58,8 @@ void draw() {
 }
 
 
-void generatePairs() {
-  grid = new Grid(20);
+void populateGrid() {
+  grid.clear();
   for (Car c : carList) 
     grid.add(c);
 }

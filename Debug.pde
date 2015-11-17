@@ -6,6 +6,7 @@ int markStep = 0;
 int markId = 0;
 int[] markList = new int[2000];
 
+
 void markBegin() {
   if (markStep == 0 && markId > 0) markStep = markId;
   if (markId == markList.length) markId = 0;
@@ -57,6 +58,7 @@ void drawMarks(boolean slow) {
 }
 
 void drawHUD() {
+  drawDebugLines();
   resetMatrix();   // default window scale and origin
   if ((hud & 1)==1) drawMarks(hud==1);
   if ((hud & 2)==0) return;
@@ -90,4 +92,23 @@ float aveNeighborSize() {
   for (Car c: carList)
     t += c.neighborCount;
   return t==0 ? 0 : t / carList.size();
+}
+
+//=======================================================================
+// This is for debug... 
+
+ArrayList<PVector> debugLines = new ArrayList<PVector>();
+
+void drawDebugLines() {
+  stroke(0,0,255);
+  for (int i = 0; i+1 < debugLines.size(); i += 2) {
+    line(debugLines.get(i).x,debugLines.get(i).y,debugLines.get(i+1).x,debugLines.get(i+1).y);
+  }
+  debugLines.clear();
+}
+
+// anywhere in the program you can use this add lines (in world space)
+void addDebugLine(PVector a, PVector b) {
+  debugLines.add(a);
+  debugLines.add(b);
 }
