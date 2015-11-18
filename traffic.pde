@@ -104,10 +104,11 @@ void drawRoads() {
 }
 
 void drawCars() {
-  PVector a = viewToWorld(0,0); // top left corner of the viewport
-  PVector b = viewToWorld(width,0);
-  PVector c = viewToWorld(width,height);
-  PVector d = viewToWorld(0,height);
+  float e = 6 * viewZoom;  // radius of a typical car in pixels
+  PVector a = viewToWorld(-e,-e); // top left corner of the viewport
+  PVector b = viewToWorld(width+e,-e);
+  PVector c = viewToWorld(width+e,height+e);
+  PVector d = viewToWorld(-e,height+e);
   for (Car car : carList) {
     if (isCW(a,b,car.pos) && isCW(b,c,car.pos) && isCW(c,d,car.pos) && isCW(d,a,car.pos))
       car.draw();

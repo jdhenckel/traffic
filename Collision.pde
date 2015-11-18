@@ -42,8 +42,9 @@ void testCollision(Car a, Car b) {
     
     ++a.damage;
     ++b.damage;
-    a.pos.add(PVector.mult(axis, -dist/2));
-    b.pos.add(PVector.mult(axis, dist/2));
+    float kick = 0.35;    // set to 0.5 for max correction
+    a.pos.add(PVector.mult(axis, -dist * kick));
+    b.pos.add(PVector.mult(axis, dist * kick));
   }
 }
 
