@@ -157,6 +157,30 @@ class Neighborhood implements Iterable<Car> {
     return this;
   }
   
+  // this is same as cone, but without the nearby cars
+  Neighborhood coneFar(int radius, float angle) {
+    reset();
+    PVector dir = PVector.fromAngle(angle);
+    int dx, dy;
+    float a;
+    if (abs(dir.x) > abs(dir.y)) {
+      dx = 0; dy = sign(dir.y); a = abs(dir.x);
+    }
+    else {
+      dx = sign(dir.x); dy = 0; a = abs(dir.y);
+    }    
+    dir.mult(grid.gap / a);
+    PVector axis = PVector.add(car.pos, dir);
+    for (int i = 2; i < radius * a; ++i) {
+      GridKey keyOnAxis = new GridKey(axis.add(dir), grid.invGap);
+      int w = min(i/2 + 1, radius - i - 1);
+      for (int j = -w; j <= w; ++j) {
+        listlistAdd(keyOnAxis, j*dx, j*dy);
+      }
+    }
+    return this;
+  }
+  
   int sign(float x) { 
     return x < 0 ? -1 : 1; 
   }
@@ -167,10 +191,9 @@ class Neighborhood implements Iterable<Car> {
   
   
   void listlistAdd(GridKey key, int i, int j) {
-      if (debuglist != null) debuglist.add(new PVector(grid.gap*(key.x + i),grid.gap*(key.y+j)));
+      if (debuglist != null) debuglist.add(new PVector(grid.gap*(key.x + i),grid.gap*(key.y + j)));
       listlistAdd(grid.map.get(key.next(i,j)));
-   }
-  
+  }
   
   
   java.util.Iterator<Car> iterator() {

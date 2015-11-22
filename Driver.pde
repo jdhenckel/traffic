@@ -10,16 +10,13 @@ class Driver {
   float maxVel = 60;    // cubits per sec (aka mph)
   float maxVelOffRoad = 25;
   float turnRate = .15;
-  
+  ArrayList<Car> awareList;
   //  TODO - change to "awareList" that is many cars in a list that is maintained by sweeping cone.
-  
-  Car dangerCar;   // a car that we might hit, or null if none
-  float dangerDist;
-  float dangerTime;
   
   Driver(Car car) {
     this.car = car;
     offRoad = 0;
+    awareList = new ArrayList<Car>();
   }
   
   void steer() {
@@ -58,7 +55,17 @@ class Driver {
   }
   
   
+  void makeAware(Car c) {
+    if (!awareList.contains(c))
+      awareList.add(c);
+  }
+  
+  
   void adjustMySpeed() {
+    float targetSpeed = maxVel;
+    if (offRoad > 10) 
+      targetSpeed = maxVelOffRoad;
+    
     if (car.damage > 5) {
       car.accel = -maxDecel;
       car.damage = 0;
@@ -71,6 +78,10 @@ class Driver {
     }    
   }
   
+  
+  
+  
+/*********************  
   void adjustMySpeed_OLDCODE() {
     // This does not change the speed, but it sets the 'accel' so the stepTime will do it
     float topSpeed = maxVel;
@@ -91,6 +102,9 @@ class Driver {
       " toi="+toStr(dangerTime) + " top="+topSpeed+" speed="+car.speed +" d="+dangerDist);
   }
   
+  Car dangerCar;   // a car that we might hit, or null if none
+  float dangerDist;
+  float dangerTime;
   
   // Sets the dangerCar, dangerDistance, etc
   void checkForDanger() {
@@ -143,6 +157,7 @@ class Driver {
     // compute how many seconds it will be until we hit c.  Or return 1000 if never.
     return 1000;
   }
+*****************/
 
   void draw() {
     // For debugging stuff

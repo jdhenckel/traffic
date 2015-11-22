@@ -33,7 +33,8 @@ void interListCollision(ArrayList<Car> list1, ArrayList<Car> list2) {
 
 
 void testCollision(Car a, Car b) {
-  //a.addWatch(b);  b.addWatch(a);
+  a.driver.makeAware(b);  
+  b.driver.makeAware(a);
   PVector axis = new PVector();
   float dist = separatingAxis(axis, a, b);
   if (dist < 0) {

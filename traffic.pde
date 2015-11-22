@@ -38,23 +38,23 @@ void setup() {
 void load() {
   randomSeed(4);
   // make a bunch of cars and roads
-  for (int i = 0; i < 80; ++i)     carList.add(new Car(random(-200, 200), random(-200, 200), false));
-  setup2();
+  for (int i = 0; i < 30; ++i)     carList.add(new Car(random(-200, 200), random(-200, 200), false));
+  setup8();
   //carList.add(new Car(0, 0, true));  carList.add(new Car(3, 0, false));
 }
 
 void draw() {
   if (!pause) ++stepCounter;
   markBegin();
-  lookAtKeys();      mark();
-  populateGrid();   mark(); 
+  lookAtKeys();    
+  populateGrid();       mark(); 
   resolveCollisions();  mark(); //<>//
   steerCars();       mark();
   stepTime();        mark();
   beginRender();
   drawRoads();       mark();
   drawCars();        mark();
-  endRender();       mark();
+  endRender();       
 }
 
 

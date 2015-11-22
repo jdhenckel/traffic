@@ -98,7 +98,7 @@ void setup1() {
   roadList.add(new Road(-100, 200, 0, 150)); 
 }
 
-void setup2() {  
+void setup4box() {  
   float w = 150;
   roadList.add(new Road(5, 5, -w, 5));
   roadList.add(new Road(-w, -5, 5, -5));
@@ -118,7 +118,15 @@ void setup2() {
   roadList.add(new Road(w, -w, w, 5));
 }
 
-void setup3() {
+void setup8() {
+  float w = 150;
+  roadList.add(new Road(-w, 0, w, 0));
+  roadList.add(new Road(0, -w, 0, w));
+  roadList.add(new Road(w, 0, 0, -w));
+  roadList.add(new Road(0, w, -w, 0));
+}  
+
+void setupMerge() {
   float w = 150;
   float x = 2;
   roadList.add(new Road(x, x, -w, x));
