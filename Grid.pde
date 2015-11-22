@@ -173,13 +173,31 @@ class Neighborhood implements Iterable<Car> {
     PVector axis = PVector.add(car.pos, dir);
     for (int i = 2; i < radius * a; ++i) {
       GridKey keyOnAxis = new GridKey(axis.add(dir), grid.invGap);
-      int w = min(i/2 + 1, radius - i - 1);
+      int w = min(i/4 + 1, radius - i - 1);
       for (int j = -w; j <= w; ++j) {
         listlistAdd(keyOnAxis, j*dx, j*dy);
       }
     }
     return this;
   }
+  
+  
+  
+  Neighborhood ray(float radius, float angle) {
+    reset();
+    GridKey key = new GridKey(car.pos, grid.invGap);
+    PVector dir = PVector.fromAngle(angle);
+    float a = max(abs(dir.x), abs(dir.y));
+    dir.div(a);
+    float x=2.5*dir.x;
+    float y=2.5*dir.y;
+    for (int i = 2; i < radius * a; ++i) {
+      listlistAdd(key, (int)x, (int)y);
+      x+=dir.x; y+=dir.y;
+    }
+    return this;
+  }
+  
   
   int sign(float x) { 
     return x < 0 ? -1 : 1; 

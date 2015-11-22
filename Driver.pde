@@ -5,11 +5,13 @@ class Driver {
   Car car;
   Road currentRoad;
   int offRoad;    // how long this driver has been off any road
-  float maxAccel = 10;  // about .5g is typical 
+  float maxAccel = 10;  // about .5g is typical (note 1g == 6 cubits/sec/sec)
   float maxDecel = 20;  // about 1g is max brake decel
   float maxVel = 60;    // cubits per sec (aka mph)
   float maxVelOffRoad = 25;
   float turnRate = .15;
+  float followTime = 2;  // seconds
+  float followDist = 16;  // cubits
   ArrayList<Car> awareList;
   //  TODO - change to "awareList" that is many cars in a list that is maintained by sweeping cone.
   
@@ -18,11 +20,16 @@ class Driver {
     offRoad = 0;
     awareList = new ArrayList<Car>();
   }
+
   
+  // This is the MAIN function for the driver
   void steer() {
     followTheRoad();
+    lookAhead();
+    reduceAwareList();
     adjustMySpeed();
   }
+
 
   void followTheRoad() {
     ++offRoad;
@@ -44,8 +51,8 @@ class Driver {
       currentRoad = null;
       return;
     }
-    offRoad = 0;
     float d = v.dist(car.pos);
+    if (d < 2) offRoad = 0;
     v.sub(car.pos);    
     if (d < 20) {
       d /= 20;
@@ -55,32 +62,95 @@ class Driver {
   }
   
   
+  // Add a car to the awareList, if it isn't already on the list
   void makeAware(Car c) {
     if (!awareList.contains(c))
       awareList.add(c);
   }
-  
-  
-  void adjustMySpeed() {
-    float targetSpeed = maxVel;
-    if (offRoad > 10) 
-      targetSpeed = maxVelOffRoad;
-    
-    if (car.damage > 5) {
-      car.accel = -maxDecel;
-      car.damage = 0;
+
+
+  // Pick a random direction and look for cars and add them to the awareList
+  void lookAhead() {
+    int radius = (int)(stoppingDistance() * 2 * grid.invGap);
+    float angle = car.angle + random(-1, 1);
+    Neighborhood nh = grid.getNeighborhood(car).ray(radius, angle);
+    for (Car c : nh) {
+      makeAware(c);
     }
-    else if (offRoad > 10) {
-      if (car.speed < maxVelOffRoad) car.accel = maxAccel;
-    }
-    else {
-      if (car.speed < maxVel) car.accel = maxAccel;
-    }    
   }
   
   
+  void adjustMySpeed() {
+    // Set my default target speed based on terrain conditions.
+    float targetSpeed = maxVel;
+    if (offRoad > 10) 
+      targetSpeed = maxVelOffRoad;
+    PVector vel = car.velocity();
+    PVector cardir = car.direction();
+    
+    // Look at all the cars that I am aware of, and decrease my targetSpeed as required.
+    for (Car c: awareList) {  
+      PVector sep = PVector.sub(c.pos, car.pos);
+      PVector cdir = c.direction();
+      float d = sep.mag();
+      // Test if the other car is in front of me, and going the same direction
+      if (cdir.dot(cardir) > .95 && sep.dot(cardir) > 0.95 * d) {
+        if (d < min(followTime * car.speed, followDist)) {
+          targetSpeed = min(targetSpeed, c.speed - 2);
+          if (car.isSpecial) println("follow slower");
+          if (d < followDist) car.speed = 0;
+        }
+        else {
+          targetSpeed = min(targetSpeed, c.speed + 1);
+          //if (car.isSpecial) println("follow faster");
+        }
+        continue;
+      }
+      // Test if other car is going to collide with me
+      PVector relVel = c.velocity().sub(vel);
+      float relSpeed = relVel.mag();
+      if (relSpeed > 1) {
+        PVector dir = PVector.div(relVel, relSpeed);
+        float moveDist = -sep.dot(dir);
+        float nearDist = PVector.mult(dir,moveDist).add(sep).mag();
+        // Test if direction is near parallel
+        if (abs(cdir.dot(cardir)) > .95 && nearDist > car.width + 1) {
+          if (car.isSpecial) println("parallel pass");
+          continue;
+        }
+        float minDist = 1 + car.width + abs(sin(sumAngles(car.angle, -c.angle)) * (car.length - car.width) * .5);
+        if (nearDist < minDist) {
+          if (car.isSpecial) println("collision avoid");
+          
+          // TODO -- figure out which car has less angle tothe point of arival
+          
+          targetSpeed = 0;
+        }
+      }
+    }       
+    targetSpeed = max(targetSpeed, 0); // make sure not negative
+    car.speed += max(-maxDecel, min((targetSpeed - car.speed), maxAccel)) / fps;
+  }
   
   
+  // Only keep awareness of cars that are in front of me and within my stopping distance
+  void reduceAwareList() {
+    float d = max(stoppingDistance(), 20);
+    PVector front = car.direction().mult(d*.9).add(car.pos);
+    d *= d;
+    for (int i = awareList.size(); i --> 0; ) {
+      Car c = awareList.get(i);
+      if (PVector.sub(c.pos, front).magSq() > d)
+        awareList.remove(i);
+    }
+  }
+  
+
+  // Return the best case scenario for stopping distance, given current speed
+  float stoppingDistance() {
+    return car.speed*car.speed/(2*maxDecel);
+  }
+    
 /*********************  
   void adjustMySpeed_OLDCODE() {
     // This does not change the speed, but it sets the 'accel' so the stepTime will do it
@@ -148,19 +218,32 @@ class Driver {
   }
   
   
-  float stoppingDistance() {
-    // return the best case scenario for stopping distance, given current speed
-    return car.speed*car.speed/(2*maxDecel);
-  }
-  
   float timeToImpact(Car c) {
     // compute how many seconds it will be until we hit c.  Or return 1000 if never.
     return 1000;
   }
 *****************/
 
+
   void draw() {
     // For debugging stuff
+if (!car.isSpecial) return;    
+    stroke(64,98,0);
+    for (Car c:awareList) {
+        line(car.pos.x, car.pos.y, c.pos.x, c.pos.y);
+    }      
+    
+        float d = stoppingDistance();
+    PVector front = car.direction().mult(d*.9).add(car.pos);
+    noFill();
+    ellipse(front.x, front.y, d*2, d*2);
+    
+    
+    int radius = (int)(d*2*grid.invGap);//(int)(20/viewZoom);//7;//(int)(second() % 7) + 1;
+    float angle = car.angle;// + (second() / 7)*.333 - 1;
+        Neighborhood nh = grid.getNeighborhood(car).ray(radius, angle);
+nh.draw();
+
  /*  
      if (currentRoad != null) {
         PVector v = currentRoad.nearestPoint(pos);

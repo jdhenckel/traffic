@@ -138,6 +138,7 @@ void dragCar() {
     if (drug >= 0) {
       // set flag on car so it can be dragged
       carList.get(drug).isDragging = true;
+      carList.get(drug).isSpecial = true;
     }
   }
   else if (drug >= 0) {

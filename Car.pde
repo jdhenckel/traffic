@@ -17,7 +17,7 @@ class Car {
     pos = new PVector(x, y); //<>//
     angle = random(6.28);
     speed = 50 + random(10);
-    width = 4;
+    width = 3.8;
     length = 9;
     isSpecial = spec;
     driver = new Driver(this);  
@@ -35,10 +35,12 @@ class Car {
     }
     else {
       if (viewZoom < 5) {
-        rect(0, 0, length, width);
+        rect(0, 0, length, width,1);
         if (viewZoom > 2) {
-          fill(0, 125, 255);  // color the wind shield
-          rect(length/6, 0, length/5, width-2); // draw the ws
+          fill(120);  // color the wind shield
+          rect(length/6, 0, length/5, width-.5,.5); // draw the ws
+          if (paint==0)
+            rect(-1.5, 0, length/3.5, width-1,1); // draw the ws
         }
       }
       else
@@ -71,10 +73,6 @@ class Car {
     }
   }
   
-  
-  void addWatch(Car car) {
-     // todo add the car to my watch list in my driver 
-  }
 }
 
 //----------------------------------------
