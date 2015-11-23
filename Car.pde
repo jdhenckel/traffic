@@ -8,6 +8,7 @@ class Car {
   float damage;
   boolean isDragging;
   boolean isSpecial;
+  boolean isDead;
   int paint;
   float width, length;
   Driver driver;

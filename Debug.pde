@@ -13,9 +13,11 @@ void markBegin() {
   mark();
 }
 
+
 void mark() {
   if (markId < markList.length) markList[markId++] = (int)System.nanoTime();
 }
+
 
 void drawMarks(boolean slow) {
   float[] ave = new float[markStep];
@@ -57,6 +59,7 @@ void drawMarks(boolean slow) {
   strokeWeight(1);
 }
 
+
 void drawHUD() {
   drawDebugLines();
   resetMatrix();   // default window scale and origin
@@ -86,6 +89,7 @@ String keydump() {
   for (int i : keyList) s += ", "+i;
   return s;
 }
+
 
 float aveNeighborSize() {
   float t =0;

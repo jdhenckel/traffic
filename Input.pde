@@ -121,7 +121,10 @@ void dropCar() {
     else if (mouseButton==RIGHT) {
       // delete nearby car
       int i = nearbyCar(pos, 30);
-      if (i >= 0) carList.remove(i);
+      if (i >= 0) {
+        carList.get(i).isDead = true;
+        carList.remove(i);
+      }
     }
   }
   else if (drug >= 0) {

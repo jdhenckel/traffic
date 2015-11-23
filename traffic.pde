@@ -18,7 +18,7 @@ PVector viewCenter = new PVector(0, 0);
 float viewZoom = 2;
 float viewAngle = 0;
 float viewTilt = PI/2;
-boolean pause = true;
+boolean pause = false;
 boolean singleStep = false;
 boolean use3D;
 int inputMode = 0;   // 1=car, 2=road
@@ -40,7 +40,8 @@ void load() {
   // make a bunch of cars and roads
   for (int i = 0; i < 30; ++i)     carList.add(new Car(random(-200, 200), random(-200, 200), false));
   setup8();
-  //carList.add(new Car(0, 0, true));  carList.add(new Car(3, 0, false));
+//  carList.add(new Car(150, 0, false));  carList.add(new Car(0, 150, false));
+//  carList.add(new Car(-150, 0, false));  carList.add(new Car(0, -150, true));
 }
 
 void draw() {
