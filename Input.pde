@@ -37,7 +37,7 @@ void lookAtKeys() {
   }
   viewCenter.add(move.rotate(viewAngle));
   if (chaseCar != null) {
-    chaseView(chaseCar.pos, sumAngles(chaseCar.angle, -PI/2));
+    chaseView(chaseCar.velocity().div(fps/12).add(chaseCar.pos), sumAngles(chaseCar.angle, -PI/2));
   }
 }
 
@@ -60,6 +60,8 @@ void keyTyped() {
     case 'v': inputMode = inputMode == 2 ? 0 : 2; break;
     case 'x': setChaseMode(); break;
     case 'h': hud = (hud + 1) & 3; break;
+    case '1': loadStuff(); break;
+    case '2': saveStuff(); break;
     case 'q': exit();
   }
 }

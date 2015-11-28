@@ -6,7 +6,7 @@
   R = reset, space = pause, z = step, c/v = mode
   Esc = quit
   
-  You can use any units you want, but recommend a cubit, which is 18 inches,
+  You can use any units you want, but I recommend a cubit, which is 18 inches,
   because conveniently 60 cubits per second is about 61 miles per hour. 
 */
 ArrayList<Car> carList = new ArrayList<Car>();
@@ -25,6 +25,18 @@ int inputMode = 0;   // 1=car, 2=road
 Grid grid;
 int stepCounter = 0;
 
+
+void World_convert(Target tar) {  
+  fps = tar.aFloat("fps", fps);
+  viewCenter = tar.aV2("viewCenter", viewCenter);
+  viewAngle = tar.aFloat("viewAngle", viewAngle);
+  use3D = tar.aBool("use3D", use3D);
+  viewTilt = tar.aFloat("viewTilt", viewTilt);
+  viewZoom = tar.aFloat("viewZoom", viewZoom);
+  carList = tar.aObjectList("carList", carList, Car.class);
+  roadList = tar.aObjectList("roadList", roadList, Road.class);
+}
+
 //----------------------------
 void setup() {
   // uncomment one of these two lines
@@ -36,7 +48,7 @@ void setup() {
 }
 
 void load() {
-  randomSeed(4);
+  randomSeed(5);
   // make a bunch of cars and roads
   for (int i = 0; i < 30; ++i)     carList.add(new Car(random(-200, 200), random(-200, 200), false));
   setup8();
@@ -111,7 +123,7 @@ void drawCars() {
   PVector c = viewToWorld(width+e,height+e);
   PVector d = viewToWorld(-e,height+e);
   for (Car car : carList) {
-    if (isCW(a,b,car.pos) && isCW(b,c,car.pos) && isCW(c,d,car.pos) && isCW(d,a,car.pos))
+    if (isInsideRectangle(car.pos,a,b,c,d))
       car.draw();
   }
 }

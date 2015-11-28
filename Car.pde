@@ -1,6 +1,5 @@
 
-
-class Car {
+class Car implements Convertible {
   PVector pos;
   float angle;
   float speed;
@@ -14,6 +13,8 @@ class Car {
   Driver driver;
   int neighborCount;
   
+  Car() {}
+  
   Car(float x, float y, boolean spec) {
     pos = new PVector(x, y); //<>//
     angle = random(6.28);
@@ -25,6 +26,18 @@ class Car {
     paint = (int) random(6); 
   }  
   
+  // This is for save and load
+  void convert(Target tar) {
+    pos = tar.aV2("pos", pos);
+    angle = tar.aFloat("angle", angle);
+    speed = tar.aFloat("speed", speed);
+    width = tar.aFloat("width", width);
+    length = tar.aFloat("length", length);
+    paint = tar.aInt("paint", paint);
+    if (driver==null) driver = new Driver(this);
+    driver = (Driver) tar.aObject("driver", driver, null);
+  }
+
   void draw() {
     pushMatrix();
     noStroke();
@@ -36,16 +49,16 @@ class Car {
     }
     else {
       if (viewZoom < 5) {
-        rect(0, 0, length, width,1);
+        rect(0, 0, length, width, 1);
         if (viewZoom > 2) {
           fill(120);  // color the wind shield
-          rect(length/6, 0, length/5, width-.5,.5); // draw the ws
-          if (paint==0)
-            rect(-1.5, 0, length/3.5, width-1,1); // draw the ws
+          rect(length/6, 0, length/5, width-.5, .5); // draw the ws
+          if (paint < 2)
+            rect(-1.5, 0, length/3.5, width-1, 1); // draw the ws
         }
       }
       else
-        drawCarImage(paint,0,0,0.045);   
+        drawCarImage(paint, 0, 0, 0.045);   
     }
     popMatrix();
     
@@ -88,11 +101,11 @@ void drawCarImage(int c, float x, float y, float scale) {
   }  
   int a = (c % 2) * 280 + 40;
   int b = (c / 2) * 128 + 4;
-  copy(allcars,a,b,240,128,(int)(x-120*scale),(int)(y-64*scale),(int)(240*scale),(int)(128*scale));
+  copy(allcars, a, b, 240, 128, (int)(x-120*scale), (int)(y-64*scale), (int)(240*scale), (int)(128*scale));
 }
 
 // these are the colors that match the cars in the image
-color[] carColor = { color(255,127,0), color(188,16,35), color(166),
-                    color(83,150,196), color(252,235,74), color(123,171,63) };
+color[] carColor = { color(255, 127, 0), color(188, 16, 35), color(166), 
+                    color(83, 150, 196), color(252, 235, 74), color(123, 171, 63) };
                     
                     

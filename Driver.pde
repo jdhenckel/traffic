@@ -1,23 +1,26 @@
 
 // The driver is the one that steers the car
 
-class Driver {
+class Driver implements Convertible {
   Car car;
   Road currentRoad;
   int offRoad;    // how long this driver has been off any road
-  float maxAccel = 5;  // about .5g is typical (note 1g == 6 cubits/sec/sec)
-  float maxDecel = 100;  // about 1g is max brake decel
+  float maxAccel = 12;  // about .5g is typical (note 1g == 22 cubits/sec/sec)
+  float maxDecel = 50;  // about 1g is max brake decel
   float maxVel = 60;    // cubits per sec (aka mph)
   float maxVelOffRoad = 25;
   float turnRate = .15;
   float followTime = 2;  // seconds
   float followDist = 16;  // cubits
   ArrayList<Car> awareList;
-  //  TODO - change to "awareList" that is many cars in a list that is maintained by sweeping cone.
+  PVector nextStart;
+  
+  void convert(Target tar) {
+    maxVel = tar.aFloat("maxVel", maxVel);
+  }
   
   Driver(Car car) {
     this.car = car;
-    offRoad = 0;
     awareList = new ArrayList<Car>();
   }
 
@@ -172,9 +175,12 @@ class Driver {
     car.angle = sumAngles(car.angle, max(-turnRate, min(da, turnRate)));
   }
 
-  
   void pickAnotherRoad() {
-    float best = offRoad > 10 ? 1e9f : 50;
+    float best = 5;
+    if (nextStart==null) {
+      nextStart = car.pos;
+      best = pow(2,offRoad);
+    }
     int seen = 0;
     Road nearest = null;
     for (int i = 0; i < roadList.size(); ++i) {
@@ -190,6 +196,7 @@ class Driver {
         }
       }
     }
+    nextStart = (nearest != null) ? nearest.end() : null;
     currentRoad = nearest;
   }  
  

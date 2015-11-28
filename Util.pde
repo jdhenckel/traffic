@@ -41,6 +41,12 @@ PVector worldToView(PVector pos) {
 }
 
 
+// test if v is inside. the corners must be a,b,c,d clockwise order
+boolean isInsideRectangle(PVector v, PVector a, PVector b, PVector c, PVector d) {
+  return isCW(v, a, b) && isCW(v, b, c) && isCW(v, c, d) && isCW(v, d, a);
+}
+
+
 // Returns true if the triangle {a,b,c} is clockwise (right handed) 
 boolean isCW(PVector a, PVector b, PVector c) {
   return (c.x-a.x)*(a.y-b.y)-(c.y-a.y)*(a.x-b.x) <= 0;
