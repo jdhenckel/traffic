@@ -14,6 +14,9 @@ class Driver implements Convertible {
   float followDist = 16;  // cubits
   ArrayList<Car> awareList;
   PVector nextStart;
+
+  // Driver cannot be created without a car
+  Convertible create() { return null; }
   
   void convert(Target tar) {
     maxVel = tar.aFloat("maxVel", maxVel);

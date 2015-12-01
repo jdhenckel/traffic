@@ -1,3 +1,4 @@
+Car carTemplate = new Car();
 
 class Car implements Convertible {
   PVector pos;
@@ -25,6 +26,8 @@ class Car implements Convertible {
     driver = new Driver(this);  
     paint = (int) random(6); 
   }  
+  
+  Convertible create() { return (Convertible) new Car(); }
   
   // This is for save and load
   void convert(Target tar) {

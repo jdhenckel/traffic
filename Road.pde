@@ -1,3 +1,4 @@
+Road roadTemplate = new Road();
 
 class Road implements Convertible {
   PVector start;
@@ -7,6 +8,8 @@ class Road implements Convertible {
   float damage;
   float usage;
   boolean isDead;
+  
+  Convertible create() { return (Convertible) new Road(); }
 
   void convert(Target tar) {
     start = tar.aV2("start", start);

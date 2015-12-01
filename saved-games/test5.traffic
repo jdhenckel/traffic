@@ -1,0 +1,61 @@
+{
+  "viewCenter.x": 0,
+  "viewCenter.y": 0,
+  "viewZoom": 2,
+  "viewTilt": 1.5707963705062866,
+  "fps": 60.228572845458984,
+  "viewAngle": 0,
+  "carList": [
+    {
+      "pos.x": 54.13076400756836,
+      "pos.y": -36.05546569824219,
+      "driver": {"maxVel": 60},
+      "width": 3.799999952316284,
+      "length": 9,
+      "angle": -2.203428030014038,
+      "paint": 2,
+      "speed": 25
+    },
+    {
+      "pos.x": -68.17667388916016,
+      "pos.y": 70.50784301757812,
+      "driver": {"maxVel": 60},
+      "width": 3.799999952316284,
+      "length": 9,
+      "angle": 0.7799980640411377,
+      "paint": 2,
+      "speed": 25
+    },
+    {
+      "pos.x": 95.53079223632812,
+      "pos.y": 15.410479545593262,
+      "driver": {"maxVel": 60},
+      "width": 3.799999952316284,
+      "length": 9,
+      "angle": -2.237048387527466,
+      "paint": 4,
+      "speed": 25
+    }
+  ],
+  "roadList": [
+    {
+      "damage": 0,
+      "len": 139.75067138671875,
+      "direction.x": 0.9338058829307556,
+      "start.y": 87.5,
+      "direction.y": -0.3577800393104553,
+      "start.x": -51,
+      "speedLimit": 0
+    },
+    {
+      "damage": 0,
+      "len": 142.24362182617188,
+      "direction.x": -0.9033796787261963,
+      "start.y": -49.5,
+      "direction.y": 0.4288417100906372,
+      "start.x": 44.5,
+      "speedLimit": 0
+    }
+  ],
+  "use3D": false
+}

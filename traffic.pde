@@ -33,8 +33,8 @@ void World_convert(Target tar) {
   use3D = tar.aBool("use3D", use3D);
   viewTilt = tar.aFloat("viewTilt", viewTilt);
   viewZoom = tar.aFloat("viewZoom", viewZoom);
-  carList = tar.aObjectList("carList", carList, Car.class);
-  roadList = tar.aObjectList("roadList", roadList, Road.class);
+  carList = tar.aObjectList("carList", carList, carTemplate);
+  roadList = tar.aObjectList("roadList", roadList, roadTemplate);
 }
 
 //----------------------------
